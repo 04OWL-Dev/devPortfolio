@@ -1,0 +1,232 @@
+<%- include('../header') %>
+<link rel="stylesheet" href="/css/mermaid.min.css">
+<style>
+.truncate-multiline {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -webkit-line-clamp: 3; /* Limit to 3 lines */
+            line-clamp: 3;
+            max-height: 4.5em; /* Adjust height for 3 lines */
+        }
+.gridjs-wrapper .gridjs .gridjs-wrapper table.gridjs-table tbody tr td {
+    font-size: 0.1em; /* Cambiar el tamaño del texto a 0.8em */
+}
+</style>  
+
+<h2 class="text-center">Listado de Ventas</h2>
+
+
+<div id="wrapper" class="container">
+    <div class="row-sm-2"><a href="/ventas/nuevo" class="btn btn-primary col-sm-1">Nuevo</a></div>
+    
+    <div id="gridjs-table"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade " id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header justify-content-between">
+            <div class="btn-close" data-bs-dismiss="modal"></div> 
+        </div>
+        <div class="modal-body">
+          <!-- Aquí se cargará el contenido dinámico -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>         
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Modal -->
+
+<!--     Modal de eliminacion -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header d-flex justify-content-between">
+            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+            <div class="btn-close" data-bs-dismiss="modal"></div> 
+        </div>
+        <div class="modal-body">
+          ¿Estás seguro de que deseas eliminar esta Venta?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteButton">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!--     Modal de eliminacion -->
+
+    <!--    <script>
+        // Interceptar los event listeners globalmente
+        const originalAddEventListener = EventTarget.prototype.addEventListener;
+        EventTarget.prototype.addEventListener = function(type, listener, options) {
+            if (type === 'touchstart' || type === 'touchmove' || type === 'wheel') {
+                if (typeof options === 'object') {
+                    options.passive = true;
+                } else {
+                    options = {
+                        passive: true
+                    };
+                }
+            }
+            originalAddEventListener.call(this, type, listener, options);
+        };
+    </script> -->
+<script>
+    const userId = <%= session.user.roles %>;
+    
+    $(document).ready(function(){
+
+        const mensaje = localStorage.getItem('mensaje');
+
+        if (mensaje) {
+            mostrarMensaje("completado", mensaje);
+            localStorage.removeItem('mensaje'); // Limpiar el mensaje después de mostrarlo
+        }
+    
+        let i = 0;
+            // Agregar el evento de clic a los botones después de renderizar la tabla
+            $(document).on('click', '.detalles', function() {
+                i++;
+                 window.id = $(this).data('id');
+                var url = `/ventas/detallesVenta/${id}`
+                // Realizar la solicitud AJAX para cargar el contenido
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        if(i==1){
+                            // Insertar el contenido en el cuerpo del modal
+                            /* $('#myModal .modal-footer').append(`<a href="/ventas/modificarVenta/${id}" class="btn btn-primary">Modificar Venta</a>`); */
+                            $('#myModal .modal-footer').append(`<a class="btn btn-primary" id="generarNota">Generar Nota de Entrega</a>`)                            
+                        }                  
+                        $('#myModal .modal-body').html(response);
+                        // Mostrar el modal
+                        $('#myModal').modal('show');
+                        },
+                    error: function() {
+                    $('#myModal .modal-body').html('<p>Error al cargar el contenido.</p>');
+                    $('#myModal').modal('show');
+                    }
+                });
+            });
+
+            $(document).on('click', '#generarNota', function() {
+                $('#myModal').modal('hide');
+                window.open(`/reportes/notaEntrega/${window.id}`, '_blank');
+            });  
+
+            $(document).on('click', '.eliminarVenta', function(event){         
+                const productId = $(this).data('id');
+                const $row = $(this).closest('tr'); // Obtener la fila actual para posibles actualizaciones
+                // Guardar el ID del producto y la fila en atributos de data del modal
+                $('#confirmDeleteModal').data('productId', productId).data('row', $row).modal('show');
+            })
+
+            $('#confirmDeleteButton').on('click', function() {
+                const modal = $('#confirmDeleteModal');
+                const productId = modal.data('productId');
+                const $row = modal.data('row');
+
+                    $.ajax({
+                        url: `/ventas/${productId}/eliminar`,
+                        type: 'GET', // Cambiar el tipo de solicitud a 'GET'
+                        success: function(response) {                           
+
+                            // Actualizar la tabla o eliminar la fila
+                            $row.remove(); // O actualiza la tabla según sea necesario
+
+                            // Ocultar el modal
+                            modal.modal('hide');
+                            mostrarMensaje("completado", "Se ha eliminado la Venta de forma exitosa");
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            // Manejo de errores
+                            console.log(textStatus, errorThrown);
+                        }
+                    });
+            });
+
+    })    
+    
+    // Obtener los datos desde el servidor
+    fetch('/ventas')
+        .then(response => response.json())
+        .then(data => {
+            // Configurar Grid.js
+            const grid = new gridjs.Grid({
+                columns: [
+                    { id: 'codigo', name: 'Código' },
+                    { id: 'fechan', name: 'Fecha' },
+                    { id: 'total_venta', name: 'Total' },
+                    /* {
+                        id: 'acciones-modificar',
+                        name: 'Modificar',
+                        formatter: (cell, row) => {
+                            return gridjs.html(`
+                                <div class= "d-flex justify-content-center " style="width:100%">
+                                    <a href="/ventas/modificarVenta/${row.cells[0].data}" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </div>                                
+                            `);
+                        }
+                    }, */
+                    {
+                        id: 'acciones-detalle',
+                        name: 'Detalle',
+                        formatter: (cell, row) => {
+                            return gridjs.html(`
+                                <div class= "d-flex justify-content-center" style="width:100%">
+                                    <div class="btn btn-secondary detalles" data-id="${row.cells[0].data}" data-bs-toggle="modal" data-bs-target="#myModal">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    </div>
+                                </div>
+                                
+                            `);
+                        }
+                    },
+                    /* {
+                        id: 'acciones-eliminar',
+                        name: 'Eliminar',
+                        formatter: (cell, row) => {
+                            return  gridjs.html(`
+                                <div class= "d-flex justify-content-center eliminarBoton" style="width:100%">
+                                    <a data-id="${row.cells[0].data}" class="btn btn-danger eliminarVenta"><i class="fa-solid fa-trash"></i></a>
+                                </div>       
+                            `);
+                        }
+                    }, */
+                ],
+                data: data,
+                pagination: {
+                    enabled: true,
+                    limit: 10
+                },
+                search: true,
+                sort: true,
+                resizable: true,
+                language: {
+                    search: {
+                        placeholder: 'Buscar...'
+                    },
+                    pagination: {
+                        previous: 'Anterior',
+                        next: 'Siguiente',
+                        showing: 'Mostrando',
+                        results: () => 'Filas'
+                    }
+                }
+            }).render(document.getElementById('gridjs-table'));
+            if(userId!=1){
+                grid.config.columns[5].hidden = true
+                grid.config.columns[3].hidden = true
+                grid.forceRender()
+            }
+        });
+</script>
+<%- include('../footer') %>            

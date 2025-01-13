@@ -1,0 +1,67 @@
+<%- include('../header') %>
+<form action="/clientes/guardar" method="post" id="registrarCliente" novalidate>
+        <div class="row contenedor rounded mt-2">
+            <div class="text-center"><h2>Nuevo Cliente</h2></div>
+            <div class="row p-0 mb-2">
+                <div class="row-sm-2 mb-3"><a href="/clientes/lista" class="btn btn-primary col-sm-1">Regresar</a></div>
+                <div class="col-sm-4">
+                    <label for="cedula">Cédula</label> 
+                    <input type="text" id="cedula" name="cedula" class="form-control" required>
+                </div>
+                <div class="col-sm-8">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" required>
+                </div>
+            </div>
+            <div class="row p-0 mb-2">
+                <div class="col-sm-3">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" id="telefono" name="telefono" class="form-control" required>
+                </div>
+                <div class="col-sm-9 mb-2">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" name="direccion" class="form-control" required>
+                </div>
+
+                <div class="col-sm-12 d-flex justify-content-end">                                         
+                    <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar">
+                </div>
+            </div>                            
+</form>
+
+<div id="contenedor-mensajes"></div>        
+<script src="/js/general.js"></script>
+<script>
+    $(document).ready(function() { 
+  
+        $('#registrarCliente').submit(function(event) {
+            event.preventDefault(); // Prevenir el envío tradicional del formulario
+
+            // Verificar si el formulario es válido
+            if (!procesarFormulario("registrarCliente")) return false;
+
+            // Obtener los valores de los campos del formulario
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: '/clientes/guardar',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {                   
+                        localStorage.setItem('mensaje', 'Cliente registrado de forma exitosa');
+                        window.location.href = '/clientes/lista';                   
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                    mostrarMensaje('error', errorMessage);
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        });
+    })
+  </script>
+    
+    
+<%- include('../footer') %>

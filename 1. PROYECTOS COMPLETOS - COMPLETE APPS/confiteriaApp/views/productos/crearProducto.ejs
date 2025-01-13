@@ -1,0 +1,283 @@
+<%- include('../header') %>
+        <link rel="stylesheet" href="/css/mermaid.min.css">
+        <style>
+            .foto{
+                overflow: hidden;
+                position: relative;
+            }
+            .foto input[type="file"]{
+                position: absolute;
+                font-size: 5px;
+                right: 0;
+                top: 0;
+                opacity: 0;
+                cursor: pointer;
+            }
+            .foto span{
+                display: none;
+            }
+            #add-image-preview{
+                background-color: white;
+                height: 150px;
+                width: 150px;
+            }
+        </style>
+        <h2 class="text-center">Nuevo Producto</h2>
+            <form enctype="multipart/form-data" id="registrarProducto" novalidate>
+                <div class="row-sm-2 mb-3"><a href="/productos/lista" class="btn btn-primary col-sm-1">Regresar</a></div>                               
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <label for="codigo_barras">Código de Barras</label>
+                        <input class="form-control"  type="text" id="codigo_barras" name="codigo_barras" required>  
+                    </div>
+                    <div class="col-sm-8">
+                        <label for="nombre">Nombre</label>
+                        <input class= "form-control" type="text" id="nombre" name="nombre" required>   
+                    </div>                
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <label for="marca">Marca</label>
+                        <input class="form-control"   type="text" id="marca" name="marca" required>  
+                    </div>
+                    <div class="col-sm-8">
+                        <label for="modelo">Modelo</label>
+                        <input class="form-control"   type="text" id="modelo" name="modelo" required>  
+                    </div>                        
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <label for="uso">Uso</label>
+                        <input class="form-control" type="text" id="uso" name="uso" required>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="categoria">Categoría</label>
+                        <select class="form-select" name="categoria" id="categoria" required>
+                            <% categorias.forEach(categoria => {%>
+                                <option value="<%=categoria.codigo%>"><%=categoria.nombre%></option> 
+                            <% });  %>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-3">
+                        <label for="existencias">Existencias</label>
+                        <input class="form-control" type="text" id="existencias" name="existencias" required>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="minimo">Stock Mínimo</label>
+                        <input class="form-control" type="text" id="minimo" name="minimo" required> 
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="cantidadMayor">Cantidad Mayor</label>
+                        <input class="form-control" type="text" id="cantidadMayor" name="cantidadMayor" required>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-sm-3">
+                        <label for="pcompra">Precio de compra($)</label>
+                        <input class="form-control" type="text" id="pcompra" name="pcompra" required>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="pventa">Precio de venta($)</label>
+                        <input class="form-control" type="text" id="pventa" name="pventa" required>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="pmayor">Precio de venta Mayor($)</label>
+                        <input class="form-control" type="text" id="pmayor" name="pmayor">
+                    </div>                        
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="foto col-sm-4">
+                        <div class="text-center" style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                            <div id="add-image-preview" class="image-container" style="display: flex; justify-content: center; align-items: center;">
+                                <!-- Aquí se mostrará la previsualización de la imagen -->
+                            </div>
+                            <label class="btn btn-primary mb-2 d-block mx-auto col-sm-3" for="imagen" id="fotol">Imagen</label>
+                        </div>
+                        <input style="display: none;" type="file" name="imagen" id="imagen" accept="image/*" class="form-control">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end row">
+                    <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar">
+                </div>   
+            </form>
+
+            <!-- Modal de Reactivación -->
+            <div class="modal fade" id="reactivateModal" tabindex="-1" aria-labelledby="reactivateModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reactivateModalLabel">Confirmación de Reactivación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Mensaje dinámico sobre el producto -->
+                            <p id="reactivateMessage"></p>
+                            <div class="col-sm-12">
+                                <i class="fa-solid fa-circle-exclamation" style="color: #333333;"></i>
+                                <small style="color: #333333;">Será redirigido a la vista de modificación de productos para que actualice detalles del mismo.</small>
+                            </div>    
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" id="confirmReactivationButton">Reactivar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <!-- Modal de Reactivación -->
+    <div id="contenedor-mensajes"></div>        
+    <script src="/js/general.js"></script>        
+    <script>
+        $(document).ready(function() {
+            $("#codigo_barras").on('blur', function(){
+                $.ajax({
+                    url: '/productos/productoAReactivar', 
+                    type: 'GET',
+                    data: {codigo_barras: $(this).val()},
+                    success: function(response) {
+                        showReactivationModal(response.nombre, response.codigo);
+                    }
+                })
+            })
+
+            $("#add-image-preview").attr("src", " ");   
+            $("#add-image-preview").on('click', function(event) {
+                event.preventDefault(); // Previene la acción predeterminada del clic
+                event.stopPropagation(); // Detiene la propagación del evento a otros elementos
+            });    
+            // Mostrar vista previa de la imagen al seleccionar un archivo en el formulario de agregar producto
+
+            $(document).on('click', '.close-btn', function(event) {
+                event.preventDefault();
+                const imageContainer = $(this).closest('div');
+                imageContainer.remove(); // Eliminar el contenedor de la imagen
+
+                // Desenfocar el input para evitar que se active accidentalmente
+                $('#imagen').blur();
+
+                // Limpiar el input para permitir seleccionar otra imagen sin que se active automáticamente
+                $('#imagen').val('');
+            });
+
+
+            $("#imagen").change(function() {
+                // Obtener el archivo seleccionado
+                var file = $(this)[0].files[0];
+
+                // Verificar que un archivo haya sido seleccionado
+                if (file) {
+                    var $preview = $("#add-image-preview");
+                    // Limpiar cualquier imagen previa
+                    $preview.empty();
+
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        // Crear un contenedor para la imagen y la "X"
+                        var imageContainer = $('<div>', {
+                            style: 'position: relative; display: flex; justify-content: center; align-items: center; width: 150px; height: 150px;'
+                        });
+
+                        // Crear la imagen
+                        var img = $('<img>', {
+                            src: e.target.result,
+                            class: 'img-responsive mb-2 preview',
+                            style: 'max-width: 100%; max-height: 100%; object-fit: contain;' // Asegura que la imagen se ajuste al contenedor sin perder proporciones
+                        });
+
+                        // Crear el botón "X"
+                        var closeButton = $('<button>', {
+                            html: '&times;', // Símbolo "X"
+                            class: 'close-btn',
+                            style: 'position: absolute; top: 5px; right: 5px; font-size: 25px; cursor: pointer; background-color: transparent; border: none; color: gray;',
+                            click: function(event) { // Eliminar la imagen al hacer clic en la "X"
+                                event.stopPropagation(); // Evitar que el clic se propague
+                                $(this).closest('div').remove(); // Elimina el contenedor de la imagen
+                                // Limpiar el input para permitir seleccionar otra imagen si es necesario
+                                $('#imagen').val(''); // Limpia el valor del input
+                            }
+                        });
+
+                        // Añadir la imagen y la "X" al contenedor
+                        imageContainer.append(img).append(closeButton);
+
+                        // Añadir el contenedor al contenedor principal de previsualización
+                        $preview.append(imageContainer);
+                    };
+
+                    // Leer la imagen como DataURL para previsualizarla
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $('#registrarProducto').submit(function(event){
+                if (!procesarFormulario("registrarProducto")) return false;  
+                event.preventDefault(); // Prevenir el envío tradicional del formulario
+                if($("#codigo_barras").val().length < 8){
+                    mostrarMensaje('error', 'El código de barras debe contener al menos 8 digitos')
+                    return false
+                }
+                if(parseFloat($("#pventa").val()) <= parseFloat($("#pcompra").val())){
+                    mostrarMensaje('error', 'El precio de venta no puede ser menor ni igual al precio de compra')
+                    return false
+                }else if(parseFloat($("#pventa").val()) <= parseFloat($("#pmayor").val())){
+                    mostrarMensaje('error', 'El precio de venta no puede ser menor ni igual al precio de mayorista')
+                    return false
+                }else if(parseFloat($("#pmayor").val()) >= parseFloat($("#pventa").val())){
+                    mostrarMensaje('error', 'El precio de mayorista no puede ser mayor ni igual al precio de venta al detal')
+                    return false
+                }else if(parseFloat($("#pmayor").val()) <= parseFloat($("#pcompra").val())){
+                    mostrarMensaje('error', 'El precio de mayorista no puede ser menor ni igual al precio de compra')
+                    return false
+                }        
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '/productos/guardar',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        // Aquí puedes manejar la respuesta del servidor
+                        localStorage.setItem('mensaje', 'Producto registrado exitosamente');
+                        window.location.href = '/productos/lista';                      
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                    mostrarMensaje('error', errorMessage);
+                    console.log(textStatus, errorThrown);
+                    }
+                });
+            });
+
+        });
+
+        function showReactivationModal(productName, productCode) {
+            // Configura el mensaje con el nombre del producto
+            $("#reactivateMessage").text(`El producto "${productName}" se encuentra en un estado de inactividad. ¿Desea reactivarlo?`);
+            
+            // Configura el evento click para redirigir al enlace deseado
+            $("#confirmReactivationButton").off("click").on("click", function() {
+                $.ajax({
+                    url: '/productos/reactivarProducto',
+                    type: 'POST',
+                    data: {codigo: productCode}, 
+                    success: function(response) {
+                        // Aquí puedes manejar la respuesta del servidor
+                        localStorage.setItem('mensaje', 'Producto reactivado exitosamente');
+                        window.location.href = `/productos/modificar/${productCode}`;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                        console.log(textStatus, errorThrown);
+                    }
+                })                
+            });
+            
+            // Muestra el modal
+            $("#reactivateModal").modal('show');
+        }
+    </script>    
+<%- include('../footer') %>   

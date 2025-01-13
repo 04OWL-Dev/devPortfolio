@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Radiografias{
+  id Int @id @default(autoincrement())
+  codigo String? @unique
+  fecha DateTime? @default(now())
+  imagenes Imagenes[]
+  observaciones String?
+  tipo_radiografia TiposRadiografia @relation(fields: [tipo_radiografia_id], references: [id])
+  tipo_radiografia_id Int
+  paciente Pacientes @relation(fields: [paciente_id], references: [id])
+  paciente_id Int 
+  tecnica_radiografia TecnicasRadiografia @relation(fields: [tecnica_radiografia_id], references: [id])
+  tecnica_radiografia_id Int
+  estado Estados @relation(fields: [estado_id], references: [id])
+  estado_id Int 
+  zona_radiografia ZonasRadiografia? @relation(fields: [zona_radiografia_id], references: [id])
+  zona_radiografia_id Int? 
+  informe Informes? @relation(fields: [informe_id], references: [id])
+  informe_id Int? @unique
+}
+
+model Informes{
+  id Int @id @default(autoincrement())
+  contenido String
+  hallazgos String
+  observaciones String?
+  radiografia Radiografias?
+}
+
+model Estados{
+  id Int @id @default(autoincrement())
+  nombre String
+  radiografias Radiografias[]
+}
+
+model Imagenes{
+  id Int @default(autoincrement()) 
+  url String @unique
+  radiografias Radiografias @relation(fields: [radiografia_id], references: [id])
+  radiografia_id Int
+  @@id([id,radiografia_id])
+}
+
+model TiposRadiografia{
+  id Int @id @default(autoincrement())
+  nombre String @unique
+  radiografias Radiografias[]
+  zonas ZonasRadiografia[]
+}
+
+model ZonasRadiografia{
+  id Int @id @default(autoincrement())
+  nombre String 
+  tipo_radiografia TiposRadiografia? @relation(fields: [tipo_radiografia_id], references: [id])
+  tipo_radiografia_id Int?
+  radiografias Radiografias[]
+}
+
+model TecnicasRadiografia{
+  id Int @id @default(autoincrement())
+  nombre String @unique
+  radiografias Radiografias[]
+}
+
+model Pacientes{
+  id Int @id @default(autoincrement())
+  cedula String @unique
+  nombres String
+  apellidos String
+  telefono String
+  direccion String
+  radiografias Radiografias[]
+}
+
+model Usuarios{
+  id Int @id @default(autoincrement())
+  username String @unique
+  password String
+  nombre String
+  email String @unique
+  tipo_usuario TiposUsuario @relation(fields: [tipo_usuario_id], references: [id])
+  tipo_usuario_id Int @unique
+}
+
+model TiposUsuario{
+  id Int @id @default(autoincrement())
+  tipo_usuario String @unique
+  usuario Usuarios[]
+}
+
+

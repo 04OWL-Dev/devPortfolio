@@ -1,0 +1,96 @@
+<%- include('../header') %>
+        <form action="/proveedores/modificar/" method="post" id="modificarProveedor">
+            <input type="hidden" value="<%= proveedor.codigo %>" name="id">
+            
+            <div class="row contenedor rounded mt-2">
+                <div class="text-center"><h2>Editar Proveedor <%= proveedor.rif %></h2></div>
+                <div class="row p-0 mb-2">
+                    <div class="row-sm-2 mb-3"><a href="/proveedores/lista" class="btn btn-primary col-sm-1">Regresar</a></div>
+                    <div class="col-sm-4">
+                        <label for="rif">RIF</label> 
+                        <input type="text" id="rif" name="rif" class="form-control" value="<%= proveedor.rif %>" required>
+                    </div>    
+                    <div class="col-sm-8">
+                        <label for="razonsocial">Razon Social</label>
+                        <input type="text" id="razon_social" name="razon_social" class="form-control" value="<%= proveedor.razon_social %>" required>
+                    </div>
+                </div>
+                <div class="row p-0 mb-2">
+                    <div class="col-sm-3">
+                        <label for="telefono">Teléfono</label>
+                        <input type="text" id="telefono" name="telefono" class="form-control" value="<%= proveedor.telefono %>" required>
+                    </div>
+                    <div class="col-sm-9">
+                        <label for="direccion">Dirección</label>
+                        <input type="text" id="direccion" name="direccion" class="form-control" value="<%= proveedor.direccion %>" required>
+                    </div>
+                </div>                
+                <div class="row p-0 mb-2">
+                    <div class="col-sm-4">
+                        <label for="email">E-mail</label>
+                        <input type="text" id="email" name="email" class="form-control" value="<%= proveedor.correo %>" required>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="web">Página Web</label>
+                        <input type="text" id="web" name="web" class="form-control" value="<%= proveedor.web %>" required>
+                    </div>
+                </div>
+                <div class="row p-0 mb-2">
+                    <div class="col-sm-4">
+                        <label for="banco">Banco</label>
+                        <select name="banco" id="banco" class="form-control" required>                           
+                            <% bancos.forEach(banco => { %>
+                                <option value="<%= banco.codigo %>" <%= banco.codigo == proveedor.banco ? 'selected' : '' %>><%= banco.nombre %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-sm-6 mb-2">
+                        <label for="cuenta">N° de Cuenta</label>
+                        <input type="text" id="cuenta" name="cuenta" class="form-control" value="<%= proveedor.numerocuenta %>" required>
+                    </div>
+
+                    <div class="col-sm-12 d-flex justify-content-end">                                        
+                        <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar" >
+                    </div>
+                </div>            
+               
+    </form>   
+
+<div id="contenedor-mensajes"></div>        
+<script src="/js/general.js"></script>
+<script>
+    $(document).ready(function() { 
+  
+        $('#modificarProveedor').submit(function(event){
+            event.preventDefault(); // Prevenir el envío tradicional del formulario
+            if (!procesarFormulario("modificarProveedor")) return false;  
+            
+            // Obtener los valores de los campos del formulario
+            var formData = new FormData(this);
+  
+            $.ajax({
+                url: '/proveedores/modificar',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    // Manejar la respuesta del servidor
+                    if (response.message) {
+                        localStorage.setItem('mensaje', response.message);
+                        window.location.href = '/proveedores/lista'; // Redirigir después de una modificación exitosa
+                    } else {
+                        mostrarMensaje('error', 'No se pudo modificar el proveedor.');
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Manejar errores de la solicitud AJAX
+                    let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                    mostrarMensaje('error', errorMessage);
+                    console.log('Error:', textStatus, errorThrown);
+                }
+            });
+        });
+    })
+  </script>
+    <%- include('../footer') %>  

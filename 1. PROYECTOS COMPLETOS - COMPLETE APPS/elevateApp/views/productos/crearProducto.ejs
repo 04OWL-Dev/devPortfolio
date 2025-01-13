@@ -1,0 +1,148 @@
+<%- include('../header') %>
+
+        <link rel="stylesheet" href="/css/mermaid.min.css">
+        <style>
+            .foto{
+                overflow: hidden;
+                position: relative;
+            }
+            .foto input[type="file"]{
+                position: absolute;
+                font-size: 5px;
+                right: 0;
+                top: 0;
+                opacity: 0;
+                cursor: pointer;
+            }
+            .foto span{
+                display: none;
+            }
+            #add-image-preview{
+                background-color: white;
+                height: 150px;
+                width: 150px;
+            }
+        </style>
+
+        <h2 class="text-center">Nuevo Producto</h2>
+            <form action="/productos/guardar" method="post" enctype="multipart/form-data" id="registrarProducto" novalidate>
+                <div class="row-sm-2 mb-3"><a href="/productos/lista" class="btn btn-primary col-sm-1">Regresar</a></div>                               
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <label for="codigo_barras">Código de Barras</label>
+                        <input class="form-control"  type="text" id="codigo_barras" name="codigo_barras" required>  
+                    </div>
+                    <div class="col-sm-8">
+                        <label for="nombre">Nombre</label>
+                        <input class= "form-control" type="text" id="nombre" name="nombre" required>   
+                    </div>                
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <label for="marca">Marca</label>
+                        <input class="form-control"   type="text" id="marca" name="marca" required>  
+                    </div>
+                    <div class="col-sm-8">
+                        <label for="modelo">Modelo</label>
+                        <input class="form-control"   type="text" id="modelo" name="modelo" required>  
+                    </div>                        
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4">
+                        <label for="uso">Uso</label>
+                        <input class="form-control" type="text" id="uso" name="uso" required>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="categoria">Categoría</label>
+                        <select class="form-select" name="categoria" id="categoria" required>
+                            <% categorias.forEach(categoria => {%>
+                                <option value="<%=categoria.nombre%>"><%=categoria.nombre%></option> 
+                            <% });  %>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center row mb-2">
+                    <div class="col-sm-3">
+                        <label for="existencias">Existencias</label>
+                        <input class="form-control" type="text" id="existencias" name="existencias" required>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="minimo">Stock Mínimo</label>
+                        <input class="form-control" type="text" id="minimo" name="minimo" required> 
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="pcompra">Precio de compra($)</label>
+                        <input class="form-control" type="text" id="pcompra" name="pcompra" required>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="pventa">Precio de venta($)</label>
+                        <input class="form-control" type="text" id="pventa" name="pventa" required>
+                    </div>                        
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="foto col-sm-4">
+                      <div class="text-center">
+                        <img src="" alt="" id="add-image-preview" class="img-responsive mb-2" width="150px" height="150px">
+                        <label class="btn btn-primary mb-2 d-block mx-auto col-sm-3" for="imagen" id="fotol">Imágen</label>
+                      </div>
+                      <input type="file" name="imagen" id="imagen" accept="image/*" class="form-control" required>
+                    </div>
+                  </div>
+                <div class="d-flex justify-content-end row">
+                    <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar">
+                </div>   
+            </form>
+
+    <div id="contenedor-mensajes"></div>        
+    <script src="/js/general.js"></script>        
+    <script>
+        $(document).ready(function() {
+
+            $("#add-image-preview").attr("src", " ");            
+            // Mostrar vista previa de la imagen al seleccionar un archivo en el formulario de agregar producto
+            $("#imagen").change(function() {
+                var file = $(this)[0].files[0];
+                var reader = new FileReader();
+    
+                reader.onload = function(e) {
+                $("#add-image-preview").attr("src", e.target.result);
+                };
+    
+                reader.readAsDataURL(file);
+            });
+
+            $('#registrarProducto').submit(function(event){
+                if (!procesarFormulario("registrarProducto")) return false;  
+                event.preventDefault(); // Prevenir el envío tradicional del formulario
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '/productos/guardar',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        // Aquí puedes manejar la respuesta del servidor
+                        localStorage.setItem('mensaje', 'Producto registrado exitosamente');
+                        window.location.href = '/productos/lista';
+                        
+                       
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                    mostrarMensaje('error', errorMessage);
+                    console.log(textStatus, errorThrown);
+                    }
+                });
+            });
+
+        });
+
+
+        
+
+
+
+    </script>    
+<%- include('../footer') %>   

@@ -1,0 +1,64 @@
+<div class="rounded row">
+    <h2 class="text-center">Detalles del Producto</h2>
+    <div class="container">
+      <div class="row mb-2">
+        <div class="col-sm-4">
+          <div><label for="codigoBarras">Código de Barras</label></div>
+          <div class="form-group">
+            <div class="input-group">
+              <input readonly class="form-control" type="text" id="codigoBarras" name="codigoBarras" value="<%= producto.codigo_barras %>">
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div><label for="nombreProducto">Nombre</label></div>
+          <div><input readonly class="form-control" type="text" id="nombreProducto" name="nombreProducto" value="<%= producto.nombre %>"></div>
+        </div>
+        <div class="col-sm-4">
+          <div><label for="marca">Marca</label></div>
+          <div><input readonly class="form-control" type="text" id="marca" name="marca" value="<%= producto.marca %>"></div>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-sm-4">
+          <div><label for="modelo">Modelo</label></div>
+          <div><input readonly class="form-control" type="text" id="modelo" name="modelo" value="<%= producto.modelo %>"></div>
+        </div>
+        <div class="col-sm-4">
+          <div><label for="uso">Uso</label></div>
+          <div><input readonly class="form-control" type="text" id="uso" name="uso" value="<%= producto.uso %>"></div>
+        </div>
+        <div class="col-sm-4">
+          <div><label for="categoria">Categoría</label></div>
+          <div><input readonly class="form-control" type="text" id="categoria" name="categoria" value="<%= producto.categoria %>"></div>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-sm-4">
+          <div><label for="existencias">Existencias</label></div>
+          <div><input readonly class="form-control" type="number" id="existencias" name="existencias" value="<%= producto.existencias %>"></div>
+        </div>
+        <div class="col-sm-4">
+          <div><label for="stockMinimo">Stock Mínimo</label></div>
+          <div><input readonly class="form-control" type="number" id="stockMinimo" name="stockMinimo" value="<%= producto.minimo %>"></div>
+        </div>        
+      </div>
+      <div class="row mb-2">
+        <div class="col-sm-4">
+            <div><label for="precioCompra">Precio de Compra</label></div>
+            <div><input readonly class="form-control" type="number" id="precioCompra" name="precioCompra" value="<%= producto.precio_compra %>"></div>
+        </div>
+        <div class="col-sm-4">
+          <div><label for="precioVenta">Precio de Venta</label></div>
+          <div><input readonly class="form-control" type="number" id="precioVenta" name="precioVenta" value="<%= producto.precio_venta %>"></div>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col text-center d-flex justify-content-center">
+          
+          <div style="width: 150px; height: 150px;"><img src="/img/productos/<%= producto.codigo %>.png" alt="Imagen del Producto" class="img-fluid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

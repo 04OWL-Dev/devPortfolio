@@ -1,0 +1,70 @@
+<%- include('../header') %>
+    <form action="/categorias/modificar" method="post" id="modificarCategoria" novalidate>
+      <input type="hidden" value="<%= id %>" name="id" />
+      <div class="row rounded mt-2">
+        <h2 class="text-center">Editar Categoría <%= id %></h2>
+        <div class="row-sm-2 mb-3"><a href="/categorias/lista" class="btn btn-primary col-sm-1">Regresar</a></div> 
+        <div class="row">
+          <div class="col-sm-4">
+            <label for="nombre">Nombre de la Categoría</label>
+            <input
+              class="form-control"
+              value="<%= nombre %>"
+              type="text"
+              id="nombre"
+              name="nombre"
+              placeholder="Escribe el nombre de la Categoría"
+              required
+            />
+          </div>
+          <div class="col-sm-8">
+            <label for="descripcion">Descripción de la Categoría</label>
+              <textarea class=" mb-1 rounded form-control" style="height: 38px; max-height: 100px;" id="descripcion" name="descripcion" placeholder="Escribe la Descripción de la Categoría." required><%= descripcion %></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 d-flex justify-content-end">                           
+                  <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar">
+          </div>
+        </div>
+      </div>
+    </form>
+
+<div id="contenedor-mensajes"></div>        
+<script src="/js/general.js"></script> 
+<script>
+  $(document).ready(function() { 
+
+      $('#modificarCategoria').submit(function(event){
+          event.preventDefault(); // Prevenir el envío tradicional del formulario
+          if (!procesarFormulario("modificarCategoria")) return false;  
+          
+          // Obtener los valores de los campos del formulario
+          var formData = new FormData(this);
+
+          $.ajax({
+              url: '/categorias/modificar',
+              type: 'POST',
+              data: formData,
+              contentType: false,
+              processData: false,
+              success: function(response) {
+         
+                  // Aquí puedes manejar la respuesta del servidor
+                  localStorage.setItem('mensaje', 'Categoría modificada exitosamente');
+                  window.location.href = '/categorias/lista';                      
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                  // Manejar los errores
+                  let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                  mostrarMensaje('error', errorMessage);
+                  console.log('Error:', textStatus, errorThrown);
+              }
+          });
+      });
+  })
+</script>
+
+
+
+<%- include('../footer') %>    

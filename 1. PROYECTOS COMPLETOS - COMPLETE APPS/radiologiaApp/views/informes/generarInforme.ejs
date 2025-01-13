@@ -1,0 +1,184 @@
+<%- include('../header') %>
+<h3 class="text-center form-label">Generar Informe</h3>
+<div><a href="/auth/home" class="btn btn-primary">Regresar</a></div>
+<form enctype="multipart/form-data" id="datosRadiografia" novalidate>
+    <input type="hidden" value="<%=id%>" id="id" name="id">                               
+    <div class="d-flex justify-content-center"><h6>Datos del Paciente</h5></div>    
+    <div class="row g-3">
+        <div class="col-sm-2" style="width: 9%;">
+            <label for="cedula">C.I</label>
+            <input class="form-control"   type="text" id="cedula" name="cedula" value="<%=paciente.cedula%>" readonly>  
+        </div>
+        <div class="col-sm-2">
+            <label for="nombre">Nombres</label>
+            <input class="form-control"   type="text" id="nombre" name="nombre" value="<%=paciente.nombres%>" readonly>  
+        </div>
+        <div class="col-sm-2">
+            <label for="apellido">Apellidos</label>
+            <input class="form-control"   type="text" id="apellido" name="apellido" value="<%=paciente.apellidos%>" readonly>  
+        </div>       
+        <div class="col-sm-2" style="width: 12%;">
+            <label for="telefono">Teléfono</label>
+            <input class="form-control"   type="text" id="telefono" name="telefono" value="<%=paciente.telefono%>" readonly>  
+        </div>
+        <div class="col-sm-5">
+            <label for="direccion">Dirección</label>
+            <input class="form-control"   type="text" id="direccion" name="direccion"  value="<%=paciente.direccion%>" readonly>  
+        </div>
+    </div>
+    <hr style="margin: 0.5%;">
+    <div class="d-flex justify-content-center" style="margin-bottom: 0px;"><h6>Información de la Radiografía</h5></div> 
+    <div class="row mb-5 g-2 d-flex" style="margin-top: 0px;">
+        <div class="col-sm-2" style="width: 9.5%;">
+            <label for="fecha">Fecha</label>
+            <input readonly class= "form-control" type="text" id="fecha" name="fecha" value="<%=fecha%>" required>   
+        </div>
+        <div class="col-sm-1" style="width: 15%;">
+            <div class="form-group">
+                <label for="tipo">Tipo de Radiografía</label>
+                <input readonly class="form-control" type="text" id="tipo" name="tipo" value="<%=tipo_radiografia.nombre%>">
+            </div>        
+        </div>        
+        <%if(zona_radiografia && zona_radiografia.nombre){%>
+            <div class="col-sm-2" style="width: 15%;" id="zona-container">
+                <div class="form-group">
+                    <label for="zona">Zona</label>
+                    <input readonly class="form-control" type="text" id="zona" name="zona" value="<%=zona_radiografia.nombre%>">
+                </div>        
+            </div>
+        <%}%>        
+        <div class="col-sm-2" style="width: 15%;">
+            <div class="form-group">
+                <label for="tecnica">Técnica</label>
+                <input readonly class="form-control" type="text" id="tecnica" name="tecnica" value="<%=tecnica_radiografia.nombre%>">
+            </div>        
+        </div>
+    </div>
+    <div class="foto col-sm-12">
+        <div class="text-center">
+            <div id="add-image-preview" class="image-container">
+                <% imagenes.forEach(imagen => { %>
+                    <img src="<%=imagen.url%>" class="img-responsive mb-2 preview" width="230px" height="230px">
+                <%}); %>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 mt-3">
+        <i class="fa-solid fa-circle-exclamation" style="color: #333333;"></i>
+        <small style="color: #333333;">Haga click sobre la imagen para ampliarla en una nueva pestaña.</small>
+    </div>
+    <% if(informe && informe.contenido && tipo_usuario == 1 && estado_id == 4 || estado_id == 6){ %>
+        <!-- Contenedor -->
+        <div class="container mt-4 mb-4" style="margin-left: 0px; padding-left: 0px;">
+            <!-- Contenedor Informe -->
+            <div class="mb-4">
+            <label for="informe" class="form-label fs-4">Informe</label>
+            <textarea class="form-control" id="informe" rows="6" placeholder="Escribe el informe aquí..." style="min-height: 200px; max-height: 350px;" name="informe"><%=informe.contenido%></textarea>
+            </div>    
+            <!-- Contenedor Hallazgos -->
+            <div>
+            <label for="hallazgos" class="form-label fs-4">Hallazgos</label>
+            <textarea class="form-control" id="hallazgos" rows="6" placeholder="Escribe los hallazgos aquí..." style="min-height: 200px; max-height: 350px;" name="hallazgos"><%=informe.hallazgos%></textarea>
+            </div>
+        </div>
+        <!-- Contenedor -->
+    <% }else{ %>
+        <!-- Contenedor -->
+        <div class="container mt-4 mb-4" style="margin-left: 0px; padding-left: 0px;">
+            <!-- Contenedor Informe -->
+            <div class="mb-4">
+            <label for="informe" class="form-label fs-4">Informe</label>
+            <textarea class="form-control" id="informe" rows="6" placeholder="Escribe el informe aquí..." style="min-height: 200px; max-height: 350px;" name="informe"></textarea>
+            </div>    
+            <!-- Contenedor Hallazgos -->
+            <div>
+            <label for="hallazgos" class="form-label fs-4">Hallazgos</label>
+            <textarea class="form-control" id="hallazgos" rows="6" placeholder="Escribe los hallazgos aquí..." style="min-height: 200px; max-height: 350px;" name="hallazgos"></textarea>
+            </div>
+        </div>
+        <!-- Contenedor -->
+    <% } %> 
+    <div class="row">
+        <div class="col-sm-12 d-flex justify-content-end">
+            <% if(informe && informe.contenido && informe.hallazgos && tipo_usuario == 1 && estado_id != 6 ){ %>
+                <div>
+                    <input class="btn btn-primary" data-bs-toggle="modal"  data-bs-target="#observacionesModal" value="Devolver" type="button">
+                </div>
+            <% } %>    
+            <div class="ms-2">
+                <input class="btn btn-primary" value="Guardar" id="guardar" type="submit">
+            </div>
+            <div class="ms-2">
+                <input class="btn btn-primary" value="Enviar" id="enviar" type="submit">
+            </div>
+        </div>
+    </div> 
+    <!-- Modal -->
+    <div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="modalObservacionesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalObservacionesLabel">Observaciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">Escribe tus observaciones:</label>
+                        <textarea class="form-control" id="observaciones" rows="5" placeholder="Escribe las observaciones aquí..." style="min-height: 200px; max-height: 300px;" name="observaciones"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" id="devolver">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+</form>
+<div id="contenedor-mensajes"></div>             
+<script>
+    
+    $(document).ready(function() {
+
+        const id = $("#id").val()
+        $('#guardar, #enviar, #devolver').click(function() {
+        // Establecer una variable global para la ruta
+            if($(this).attr('id') == 'guardar'){
+                window.ruta = `/informes/guardarInforme/${id}`
+                window.estado = 4;
+            }else if($(this).attr('id') == 'enviar') {
+                window.ruta = `/informes/guardarInforme/${id}`
+                window.estado = 5;
+            }else if($(this).attr('id') == 'devolver'){
+                window.ruta = `/informes/guardarInforme/${id}`
+                window.estado = 7;
+            }
+        });      
+
+        $("#datosRadiografia").submit(function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+            if (!procesarFormulario("datosRadiografia")) return false;            
+            var formData = new FormData(this);
+            formData.append('estado', window.estado);
+            
+            $.ajax({
+                url: `${window.ruta}`,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    localStorage.setItem('mensaje', 'Envío Exitoso');
+                    window.location.href = '/radiografias/general';                 
+                },
+                error: function(xhr) {
+                    const error = xhr.responseJSON
+                    console.log(xhr.responseText)
+                    mostrarMensaje('error', `El archivo ${error.nombre} ha sido utilizado previamente`)
+                }
+            });
+        });       
+
+    });
+</script>
+<%- include('../footer') %>

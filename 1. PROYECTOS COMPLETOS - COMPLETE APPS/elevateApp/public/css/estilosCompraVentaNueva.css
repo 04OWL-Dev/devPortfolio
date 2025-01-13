@@ -1,0 +1,400 @@
+/* Estilos listas */
+
+ul{
+    list-style-type: none;
+    width: 600px;
+    background: #ccc;
+    margin: 15px;
+    padding: 10px;    
+}
+
+/* Estilos botones */
+
+button{    
+    background: #1668c4;
+    padding: 10px 15px;
+    border: 0;   
+    border-radius: 0 10px 0px 0;
+    color: #fff;
+    height: 30px;
+    border: 1px solid #000;
+    cursor: pointer;
+}
+
+button:hover{
+    background: #4a88f4
+}
+
+/* Estilo inputs */
+
+input{
+    width: 100%;   
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #000;
+}
+
+input[type="submit"]{    
+    background: #1668c4;
+    color: #fff; 
+    cursor: pointer;
+    border: 1px solid #000;
+}
+
+input[type="submit"]:hover{
+    background: #4a88f4;
+}
+
+/*Estilos tablas*/
+
+table{       
+    border: 1px solid #000;
+    border-collapse: collapse;
+    width: 80%;
+}
+
+.titulos{
+    text-align: center;
+}
+
+table td {    
+    border: 1px solid #000;
+    padding: 5px;    
+}
+
+table tr:hover{
+    background: #2853ae;
+}
+
+table td:hover{
+    background: #ccc;
+    color: #000;
+}
+
+/* Estilos formulario final de pago de venta */
+
+.contenedorpagar{
+    width: 500px;
+    background: #ccc;
+    margin: 20px;
+    padding: 10px;    
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo{
+    width: inherit;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.contenedordetalles{
+    display: flex;
+    flex-direction: row;   
+    border: 1px solid #000;    
+    padding: 10px;
+    justify-content: space-between;
+    margin-bottom: 5px;
+
+}
+
+.descripcion{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 100%;
+}
+
+.detallepago{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 100%;
+}
+
+.detallepagotitulos, .descripciontitulos{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.descripcioninput, .detallepagoinput{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.totalinput, .descuentoinput, .deudainput, .vueltoinput, .debitofinal, .creditofinal, .efectivofinal, .divisafinal, .pagomovilfinal, .biopagofinal{
+    display: flex;
+    align-items: center;
+    width: 120px;
+    height: 30px;
+    margin-bottom: 5px;    
+}
+
+.totalinput input, .descuentoinput input, .deudainput input, .vueltoinput input, .debitofinal input, .creditofinal input, .efectivofinal input, .divisafinal input, .pagomovilfinal input, .biopagofinal input{   
+   height: 30px;   
+}
+
+.totaltitulo, .descuentotitulo, .deudatitulo, .vueltotitulo, .debitotitulo, .creditotitulo, .efectivotitulo, .divisatitulo, .pagomoviltitulo, .biopagotitulo{
+    display: flex;
+    align-items: flex-end;
+    margin-right: 5px;
+    height: 30px;
+    margin-bottom: 5px;   
+}
+
+/* Estilos formularios nueva compra y nueva venta */
+
+.superior{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.encabezado{
+    display: flex;
+    flex-direction: column;   
+    text-align: center;    
+    margin: 5px;
+}
+
+.encabezado .numeroventa input, .numerocompra input{
+    height: 30px;
+    width: 150px;
+}
+
+
+.encabezado .clientecampos, .proveedorcampos{
+    display: flex;
+    flex-direction: row;
+    height: inherit;
+    margin-right: 10px;    
+}
+
+.encabezado .clientecampos input, .proveedorcampos input{
+    height: 30px;
+    width: 150px;
+}
+
+.encabezado .cliente label{
+    text-align: center;
+}
+
+.numeroventa, .cliente{
+    text-align: center;
+}
+
+.pagos{
+    display: flex;
+    flex-direction: column;    
+    justify-content: space-around;    
+}
+
+
+.pagos .formapago, .metodopago{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-right: 5px;
+}
+
+.formapago{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.registrofecha{
+    height: 30px;
+}
+
+.calendario input{
+    height: 30px;
+    width: 110px;
+}
+
+.calendario{
+    display: flex;
+    flex-direction: row;    
+    align-items: center;    
+    height: inherit;
+    margin: 5px;
+}
+
+.calendario .titulofecha{
+    display: flex;
+    margin-right: 10px;
+    height: inherit;
+    align-items: center;    
+}
+
+.calendario .botonfecha{      
+    height: inherit;    
+}
+
+.inferior{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+}
+
+.interno{      
+    width: 90%;   
+    border: 1px solid #000; 
+    display: flex;
+    flex-direction: column; 
+    padding-bottom: 0px;
+    text-align: center;    
+}
+
+.barraproducto{
+    display: flex;
+    flex-direction: row;
+}
+
+.barraproducto button{
+    height: 37.6px;
+}
+
+.preciocantidad{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    text-align: center;    
+}
+
+.preciocantidad input{
+    display: block;    
+    width: 170px;    
+}
+
+.totalcompra, .totalventa{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    text-align: center;    
+}
+
+.totalcompra input, .totalventa input{
+    display: block;
+    width: 170px;
+}
+
+.interno2{
+    display: flex;  
+    flex-direction: row; 
+    box-sizing: border-box;
+    width: 100%;    
+    padding: 10px;       
+}
+
+.boton{  
+    flex-wrap: nowrap;
+    width: 100%;
+    margin-right: 10px;    
+}
+
+#tablanuevacompra, #tablanuevaventa{
+    width: 100%;    
+}
+
+/* Estilos nueva categoria*/
+
+.nuevacategoria{
+    background: #ccc;
+    width: 450px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;    
+}
+
+.nuevacategoria textarea{
+    width: 90%;
+}
+
+/* Estilos Formulario Productos*/
+
+.detallesptitulos{
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    justify-content: space-around;
+}
+
+.detallesptitulos label{
+    width: 60%;    
+}
+
+.detallespcampos{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 5px;   
+}
+
+.detallespcampos input{
+    width: 60%;
+    margin-right: 5px;    
+}
+
+.nombreproducto{
+    text-align: center;
+    margin-right: 5px;
+}
+
+#uso, #pventa{
+    margin-right: 0px;
+}
+
+input[type="file"]{
+    display: none;
+}
+
+.imagen{
+    text-align: center;      
+}
+
+.imagen label{
+    width: 15%;
+    padding: 1%;   
+}
+
+.cargarimagen{
+    display: inline-block;   
+    color: #fff;
+    background: #1668c4;
+    margin-top: 5px;
+    margin-bottom: 5px; 
+    border: 1px solid #000;   
+}
+
+.cargarimagen:hover{
+    background: #4a88f4;
+    cursor: pointer;   
+}
+
+/*Estilos formulario proveedores*/
+
+#rif, #telefono, #titulorif, #titulotelefono{
+    width: 30%;
+}
+
+#direccion, #titulodireccion, #botonguardar{
+    width: 100%;
+}
+
+#botonguardar{
+    margin-right: 5px;
+}
+
+/*Estilos formulario clientes*/
+
+#titulocedula{
+    width: 30%;
+}

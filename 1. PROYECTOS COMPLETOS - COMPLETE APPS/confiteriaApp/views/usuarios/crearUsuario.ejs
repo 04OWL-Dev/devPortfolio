@@ -1,0 +1,71 @@
+<%- include('../header') %>
+<form action="/usuarios/guardar" method="post" id="registrarUsuario" novalidate>
+        <div class="row contenedor rounded mt-2">
+            <div class="text-center"><h2>Nuevo Usuario</h2></div>
+            <div class="row p-0 mb-2">
+                <div class="row-sm-2 mb-3"><a href="/usuarios/lista" class="btn btn-primary col-sm-1">Regresar</a></div>
+                <div class="col-sm-2">
+                    <label for="username">Username</label> 
+                    <input type="text" id="username" name="username" class="form-control" required>
+                </div>
+                <div class="col-sm-2">
+                    <label for="password">Password</label>
+                    <input type="text" id="password" name="password" class="form-control" required>
+                </div>
+                <div class="col-sm-2">
+                    <label for="rol">Rol</label>
+                    <select name="rol" id="rol" class="form-select" required>                           
+                        <% roles.forEach(rol => { %>
+                            <option value="<%= rol.codigo %>"><%= rol.nombre_rol %></option>
+                        <% }) %>
+                        <!-- Mejorar -->
+                    </select>
+                </div>
+            </div>
+                <div class="col-sm-12 d-flex justify-content-end">                                         
+                    <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar">
+                </div>
+            </div>                            
+</form>
+
+<div id="contenedor-mensajes"></div>        
+<script src="/js/general.js"></script>
+<script>
+    $(document).ready(function() { 
+
+        $('#registrarUsuario').submit(function(event){
+            event.preventDefault(); // Prevenir el envío tradicional del formulario
+            if (!procesarFormulario("registrarUsuario")) return false;
+            
+            var contraseña = $("#password").val();
+            if (contraseña.length < 4) {
+                mostrarMensaje("error", "La nueva contraseña debe tener al menos 4 caracteres.");
+                return;
+            } 
+            // Obtener los valores de los campos del formulario
+            var formData = new FormData(this);
+  
+            $.ajax({
+                url: '/usuarios/guardar',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    
+                    // Aquí puedes manejar la respuesta del servidor
+                    localStorage.setItem('mensaje', 'Usuario registrado exitosamente');
+                    window.location.href = '/usuarios/lista';                      
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                    mostrarMensaje('error', errorMessage);
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        });
+    })
+  </script>
+    
+    
+<%- include('../footer') %>

@@ -1,0 +1,340 @@
+<%- include('../header') %>
+<h2 class="text-center">Radiografías</h2>
+<input type="hidden" id="usuario" value="<%=tipo_usuario%>">
+<div id="wrapper" class="container">
+    <div class="row">
+        <div class="col-sm-12 d-flex justify-content-start">
+            <% if(tipo_usuario == 2){ %>
+                <div><a href="/radiografias/nuevaRadiografia" class="btn btn-primary">Nueva</a></div>            
+            <% } %>         
+        </div>
+    </div>         
+    <div id="gridjs-table"></div>
+</div>
+<!-- Modal Detalles -->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between">
+                <div class="btn-close" data-bs-dismiss="modal"></div> 
+            </div>
+            <div class="modal-body">
+                <!-- Aquí se cargará el contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cierreModal">Cerrar</button>         
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Detalles -->
+<!-- Modal Observaciones -->
+<div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="modalObservacionesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalObservacionesLabel">Observaciones</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="observaciones" class="form-label">Escribe tus observaciones:</label>
+                    <textarea class="form-control" id="observaciones" rows="5" placeholder="Escribe las observaciones aquí..." style="min-height: 200px; max-height: 300px;" name="observaciones"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary" id="devolver">Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Observaciones -->
+<script>
+
+    $(document).ready(function(){
+
+            let estado;
+            const mensaje = localStorage.getItem('mensaje');
+            const footerOriginal = $('#myModal .modal-footer').html(); // Clona el contenido original del footer
+
+            if (mensaje) {
+                mostrarMensaje("completado", mensaje);
+                localStorage.removeItem('mensaje'); // Limpiar el mensaje después de mostrarlo
+            }
+   
+            $(document).on('click', '.detalles', function() {
+                               
+   
+                window.id = $(this).data('id');
+                estado = $(this).data('estado')
+                const usuario = $("#usuario").val()         
+
+                // Realizar la solicitud AJAX para cargar el contenido
+                $.ajax({                    
+                    url: `/radiografias/detallesRadiografia/${window.id}`,
+                    type: 'GET',
+                    success: function(response) {
+                    
+                    if(usuario == 1 && (estado == 2 || estado == 3)){
+                       
+                            $('#myModal .modal-footer').append(`<a class="btn btn-primary" id="modalDevolver">Devolver</a>`);
+
+                            /* $('#myModal .modal-footer').append(`<a href="/radiografias/modificarRadiografia/${id}" class="btn btn-primary">Modificar Radiografía</a>`); */
+
+                            $('#myModal .modal-footer').append(`<a href="/informes/generarInforme/${window.id}" class="btn btn-primary">Generar Informe</a>`); 
+                       
+                    }
+
+                    if(usuario == 2 && (estado == 5 || estado == 8) ){
+                      
+                            $('#myModal .modal-footer').append(`<a class="btn btn-primary" id="modalDevolver">Devolver</a>`);
+
+                            /* $('#myModal .modal-footer').append(`<a href="/radiografias/modificarRadiografia/${id}" class="btn btn-primary">Modificar Radiografía</a>`); */
+
+                            $('#myModal .modal-footer').append(`<a href="/radiografias/imprimirPdf/${window.id}" class="btn btn-primary">Imprimir Informe</a>`);                      
+                               
+                    }
+                    
+                    if(usuario == 2 && estado == 1){
+                      
+                            $('#myModal .modal-footer').append(`<a href="/radiografias/modificarRadiografia/${id}" class="btn btn-primary">Modificar Radiografía</a>`);
+
+                            $('#myModal .modal-footer').append(`<input class="btn btn-primary" value="Enviar" id="enviar" type="submit">`);
+                                          
+                    }
+
+                    if(usuario == 2 && estado == 7){
+                      
+                            $('#myModal .modal-footer').append(`<a href="/radiografias/modificarRadiografia/${id}" class="btn btn-primary">Modificar Radiografía</a>`);
+                     
+                    }
+
+                    if(usuario == 1 && estado == 4){
+                       
+                            $('#myModal .modal-footer').append(`<a href="/informes/generarInforme/${id}" class="btn btn-primary">Modificar Informe</a>`);
+
+                            $('#myModal .modal-footer').append(`<input class="btn btn-primary" value="Enviar" id="enviar" type="submit">`);
+                    
+                    }
+                    
+                    if(usuario == 1 && estado == 6){                      
+                            $('#myModal .modal-footer').append(`<a href="/informes/generarInforme/${id}" class="btn btn-primary">Modificar Informe</a>`);                                             
+                    }
+                    // Insertar el contenido en el cuerpo del modal                    
+                    $('#myModal .modal-body').html(response);
+                    // Mostrar el modal
+                    $('#myModal').modal('show');
+                    },
+                    error: function() {
+                    $('#myModal .modal-body').html('<p>Error al cargar el contenido.</p>');
+                    $('#myModal').modal('show');
+                    }
+                });
+
+                if(usuario == 1 && estado == 2){
+                    actualizarEstado(3)
+                }
+
+                if(usuario == 2 && estado == 5){
+                    actualizarEstado(8)
+                }
+
+            });
+
+            $(document).on('click', '#modalDevolver', function(e) {
+                e.preventDefault();
+                // Muestra el segundo modal sin cerrar el primero
+                $('#observacionesModal').modal('show');
+                // Ajuste del z-index para que el segundo modal aparezca encima del primero
+                $('#observacionesModal').css('z-index', parseInt($('#myModal').css('z-index')) + 10);
+                $('.modal-backdrop').last().css('z-index', parseInt($('#observacionesModal').css('z-index')) - 1);
+                // Evitar que el primer modal se cierre
+                $('#myModal').on('hidden.bs.modal', function (e) {
+                    // Cancelar el evento para evitar cerrar el primer modal
+                    e.preventDefault();
+                });
+            });
+            
+            window.i = 0; // Contador para las pulsaciones de Esc
+            $(document).on('keydown', function(e) {
+                if (e.key === "Escape") { // Detecta la tecla "Esc"
+                    e.preventDefault(); // Previene el comportamiento predeterminado de cerrar modales
+                    if ($('#observacionesModal').hasClass('show')) {
+                        // Si el modal de observaciones está abierto, lo cierra
+                        $('#observacionesModal').modal('hide');
+                        $('#myModal .modal-footer').replaceWith(footer)
+                        window.i++; // Incrementa el contador
+                        return; // Detiene la ejecución aquí
+                    }
+                    // Si el modal de observaciones no está abierto y se presiona 'Esc'
+                    if (window.i === 0) {
+                        window.i++; // Incrementa el contador al primer Esc
+                    } else {
+                        // Si el contador es 1 (segundo Esc), cierra el modal de detalles
+                        $('#myModal').modal('hide'); // Cierra el modal de detalles
+                        $('#myModal .modal-footer').html(footerOriginal);
+                        window.i = 0; // Reinicia el contador
+                    }
+                }
+            });
+
+            // Previene que el primer modal se cierre al presionar 'Esc' solo si el modal de observaciones está abierto
+            $('#myModal').on('hide.bs.modal', function (e) {
+                if ($('#observacionesModal').hasClass('show')) {
+                    e.preventDefault(); // Evita que el primer modal se cierre
+                }
+            });
+
+            $('#myModal').on('hidden.bs.modal', function () {
+                $('#myModal .modal-footer').html(footerOriginal); // Restablecer el contenido original del footer
+            });
+
+            // Restaurar el footer cuando se presiona el botón de cierre
+            $("#cierreModal").on('click', function () {
+                $('#myModal .modal-footer').html(footerOriginal); // Restablecer el contenido original del footer
+            });
+
+            $(document).on('click', '#devolver', function(event){
+                const observaciones = $("#observaciones").val();
+                const usuario = $("#usuario").val();
+                let estadoAux
+                if(usuario == 1){
+                    estadoAux = 7
+                }else{
+                    estadoAux = 6
+                }
+                $.ajax({                    
+                    url: `/radiografias/introducirObservacion/${window.id}`,
+                    type: 'POST',
+                    data:{
+                        estado: estadoAux, 
+                        observaciones: observaciones
+                    },
+                    success: function(response) {
+                        // Aquí puedes manejar la respuesta del servidor
+                        localStorage.setItem('mensaje', 'Envío Exitoso');
+                        window.location.href = '/radiografias/general';   
+                    },
+                    error: function() {
+                        console.log('Error al actualizar el estado')
+                    }
+                });
+            });
+
+            $(document).on('click', '#enviar', function(event){
+                const usuario = $("#usuario").val()
+                
+
+                if(Number(usuario) === 2 && estado === 1){
+                    actualizarEstado(2);
+                }else if(Number(usuario) === 1 && estado === 4){
+                    actualizarEstado(5);
+                } 
+            })
+
+            function actualizarEstado(estado){
+                $.ajax({                    
+                    url: `/radiografias/actualizarEstado/${window.id}`,
+                    type: 'POST',
+                    data:{
+                        estado: estado
+                    },
+                    success: function(response) {
+                        if(estado == 3 || estado == 8){
+                            return
+                        }else{
+                            localStorage.setItem('mensaje', 'Envío Exitoso');
+                            window.location.href = '/radiografias/general';    
+                        }                        
+                    },
+                    error: function() {
+                        console.log('Error al actualizar el estado')
+                    }
+                });
+            }
+    })     
+
+    // Obtener los datos desde el servidor
+    fetch('/radiografias')
+        .then(response => response.json())
+        .then(data => {
+            // Configurar Grid.js
+            new gridjs.Grid({
+                columns: [
+                    { id: 'id', name: 'ID' },
+                    { id: `paciente`, name: 'Paciente' },
+                    { id: 'fecha', name: 'Fecha' },
+                    { id:'estado_id', 
+                      name: 'Estado',
+                      formatter: (cell) => {
+                        const estadoIcons = {
+                            1: '<i class="fa-solid fa-floppy-disk" style="color: #28a745;" title="Guardado por Técnico"></i>', // Guardado por Técnico
+                            2: '<i class="fa-solid fa-paper-plane" style="color: #007bff;" title="Enviado por Técnico"></i>', // Enviado por Técnico
+                            3: '<i class="fa-solid fa-download" style="color: #28a745;" title="Recibido por Médico"></i>', // Recibido por Médico
+                            4: '<i class="fa-solid fa-floppy-disk" style="color: #17a2b8;" title="Guardado por Médico"></i>', // Guardado por Médico (color diferente)
+                            5: '<i class="fa-solid fa-paper-plane" style="color: #17a2b8;" title="Enviado por Médico"></i>', // Enviado por Médico (color diferente)
+                            6: '<i class="fa-solid fa-exclamation-triangle" style="color: #ffc107;" title="Devuelto por observación del Técnico"></i>', // Devuelto por observación del Técnico
+                            7: '<i class="fa-solid fa-exclamation-triangle" style="color: #dc3545;" title="Devuelto por observación del Médico"></i>', // Devuelto por observación del Médico (color diferente)
+                            8: '<i class="fa-solid fa-download" style="color: #28a745;" title="Recibido por Técnico"></i>', // Recibido por Técnico
+                            9: '<i class="fa-solid fa-check-circle" style="color: #28a745;" title="Entregado a Paciente"></i>' // Entregado a Paciente
+                        };
+                        const estadoId = Number(cell)
+                        window.estado = estadoId;
+                        
+                        // Obtener el ícono correspondiente al estado
+                        const iconHtml = estadoIcons[estadoId] || '<i class="fa-solid fa-question-circle" style="color: gray;" title="Estado desconocido"></i>';
+                        return gridjs.html(`
+                            <div class="d-flex justify-content-center" style="width: 100%">${iconHtml}</div>
+                        `);
+                        }
+                    },                    
+                    /* {
+                        id: 'acciones-modificar',
+                        name: 'Modificar',
+                        formatter: (cell, row) => {
+                            return gridjs.html(`
+                                <div class= "d-flex justify-content-center" style="width:100%">
+                                    <a href="/compras/modificarCompra/${row.cells[0].data}" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </div>                                
+                            `);
+                        }
+                    }, */
+                    {
+                        id: 'acciones-detalle',
+                        name: 'Detalle',
+                        formatter: (cell, row) => {
+                            return gridjs.html(`
+                                <div class= "d-flex justify-content-center" style="width:100%">
+                                    <div class="btn btn-primary detalles" data-id="${row.cells[0].data}" data-estado="${window.estado}"data-bs-toggle="modal" data-bs-target="#myModal">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    </div>
+                                </div>                                
+                            `);
+                        }
+                    },
+                ],
+                data: data,
+                pagination: {
+                    enabled: true,
+                    limit: 10
+                },
+                search: true,
+                sort: true,
+                resizable: true,
+                language: {
+                    search: {
+                        placeholder: 'Buscar...'
+                    },
+                    pagination: {
+                        previous: 'Anterior',
+                        next: 'Siguiente',
+                        showing: 'Mostrando',
+                        results: () => 'Filas'
+                    }
+                }
+            }).render(document.getElementById('gridjs-table'));          
+            
+        });   
+</script>
+<%- include('../footer') %>

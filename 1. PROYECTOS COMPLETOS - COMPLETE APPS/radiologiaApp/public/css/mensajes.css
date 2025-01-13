@@ -1,0 +1,83 @@
+@charset "utf-8";
+/* CSS Document */
+
+.info, .exito, .alerta, .error {
+    font-family:Arial, Helvetica, sans-serif; 
+    font-size:13px;
+    border: 1px solid;
+    margin: 10px 0px;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    position:relative;
+}
+.info {
+    color: #00529B;
+    background-color: #BDE5F8;
+    background-image: url('info.png');
+}
+.exito {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+    background-image:url('exito.png');
+}
+.alerta {
+    color:#fff;
+    background-color:#990000;
+/*    background-image: url('alerta.png');*/
+	display:none;
+	position:absolute;
+	z-index:2;
+	top:10%;
+	border:none;
+	width:auto;
+	text-align:center;
+	height:auto;
+	margin:5px;
+	padding:5px;
+	box-shadow:0px 0px 100px #000000;
+	border-radius:2px;
+}
+.error {
+    color: #D8000C;
+    background-color: #FFBABA;
+    background-image: url('error.png');
+}
+#contenedor-mensajes {
+    float: right;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    width: 400px;
+  }
+  
+  .mensaje {
+    margin-bottom: 10px;
+    position: relative;
+    padding-right: 40px; /* Espacio para el botón de cerrar */
+    animation-name: mensajeEntrada;
+    animation-duration: 0.5s;
+  }
+  
+  .cerrar-mensaje {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px;
+    cursor: pointer;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 12px;
+  }
+  
+  @keyframes mensajeEntrada {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }

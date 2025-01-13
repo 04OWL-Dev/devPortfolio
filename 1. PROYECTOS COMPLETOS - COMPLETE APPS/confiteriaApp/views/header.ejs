@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Empresa</title>
+  
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="/css/style.css">    
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/jquery-ui.min.css" />
+    <link rel="stylesheet" href="/css/mensajes.css" />
+    <link rel="stylesheet" href="/css/lineicons1.css">
+    <script src="/js/gridjs.umd.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/use.fontawesome.com_releases_v6.3.0_js_all.js"></script>
+    <script src="/js/jquery-ui.min.js"></script> 
+  
+
+    <style>
+        a,span{
+            text-decoration: none;
+        }
+
+        .btn-primary{
+            background: #02264d ;
+            border-color: #02264d;
+        }
+
+        h2{
+            color:#02264d; ;
+        }
+
+        .btn-success{
+            background: rgb(169, 168, 168);
+            border-color:rgb(169, 168, 168);
+        }
+
+        .btn-success:hover{
+            background: gray;
+            border-color: gray;
+        }
+
+        .wrapper2{
+            display: none;
+        }        
+    </style>
+
+<style>
+    :root {
+        --transition-duration: 2s;
+        --path-length: 157px; /* Longitud total del SVG */
+    }
+
+    /* Contenedor del Preloader */
+    #preloader-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        z-index: 9999;
+    }
+
+    #preloader {
+        width: 100px;
+        height: 150px;
+        overflow: visible;
+    }
+
+    /* Animación para el grupo */
+    #preloader g {
+        animation: preloader-slide var(--transition-duration) linear infinite;
+    }
+
+    #preloader g:nth-child(2) {
+        animation-delay: calc(var(--transition-duration) / 4);
+    }
+
+    #preloader g:nth-child(2) path {
+        animation-delay: calc(var(--transition-duration) / 4);
+        stroke-dasharray: calc(0px + var(--path-length) + 1);
+        stroke-dashoffset: 1px;
+    }
+
+    /* Estilos para todos los paths */
+    #preloader path {
+        stroke: url(#gradient);
+        stroke-width: 20px;
+        stroke-linecap: round;
+        fill: none;
+        stroke-dasharray: 0 var(--path-length);
+        stroke-dashoffset: 0;
+        animation: preloader-escalade var(--transition-duration) cubic-bezier(0.8, 0, 0.2, 1) infinite;
+    }
+
+    /* Keyframes específicos para el preloader */
+    @keyframes preloader-slide {
+        0% {
+            transform: translateY(-30px);
+        }
+        100% {
+            transform: translateY(30px);
+        }
+    }
+
+    @keyframes preloader-escalade {
+        0% {
+            stroke-dasharray: 0 var(--path-length);
+            stroke-dashoffset: 0;
+        }
+        50% {
+            stroke-dasharray: var(--path-length) var(--path-length);
+            stroke-dashoffset: 0;
+        }
+        100% {
+            stroke-dasharray: var(--path-length) var(--path-length);
+            stroke-dashoffset: calc(-1 * (var(--path-length) - 1));
+        }
+    }
+</style>
+
+
+</head>
+<body>
+    <div class="wrapper">        
+        <aside id="sidebar">
+            <div class="d-flex">
+                <input type="hidden" value= "<%= session.user.id  %>" id="codigo">
+                <button class="toggle-btn" type="button">
+                    <i class="fa-solid fa-bars" style="font-size: 1.5em; color: white;"></i>
+                </button>
+                <div class="sidebar-logo">
+                    <a href="/auth/index"><img src="/img/logomini.png" style="width: 70px; margin-left:20px; margin-top: 20px"></a>
+                    
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                <%if(session.user.roles == 1 || session.user.roles == 3 ){%>                
+                <li class="sidebar-item" >
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#compras" aria-expanded="false" aria-controls="compras">
+                        <i class="fa-solid fa-hand-holding-dollar" style="font-size: 1.5em;"></i>
+                        <span>Pedidos</span>
+                    </a>
+                    <ul id="compras" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="/compras/nuevo" class="sidebar-link">Nuevo</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="/compras/lista" class="sidebar-link">Listado</a>
+                        </li>
+                    </ul>
+                </li><% } %>
+                <%if(session.user.roles == 1 || session.user.roles == 2 ){%>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#ventas" aria-expanded="false" aria-controls="ventas">                        
+                        <i class="fa-brands fa-shopify" style="font-size: 1.5em;"></i>
+                        <span>Ventas</span>
+                    </a>
+                    <ul id="ventas" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="/ventas/nuevo" class="sidebar-link">Nueva</a>
+                        </li>
+                        <% if(session.user.roles == 1){ %>
+                        <li class="sidebar-item">
+                            <a href="/ventas/lista" class="sidebar-link">Listado</a>
+                        </li>
+                        <% } %>
+                    </ul>
+                </li><% } %>
+                <%if(session.user.roles == 1 || session.user.roles == 3 ){%>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#productos" aria-expanded="false" aria-controls="productos">
+                        <i class="fa-solid fa-boxes-stacked" style="font-size: 1.5em;"></i>
+                        <span>Productos</span>
+                    </a>
+                    <ul id="productos" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                        <li class="sidebar-item">
+                            <a href="/productos/nuevo" class="sidebar-link">Nuevo</a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a href="/productos/lista" class="sidebar-link">Listado</a>
+                        </li>
+                    </ul>
+                </li><% } %>
+                <%if(session.user.roles == 1){%>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#categorias" aria-expanded="false" aria-controls="categorias">
+                        <i class="fa-solid fa-list" style="font-size: 1.5em;"></i>
+                        <span>Categorías</span>
+                    </a>
+                    <ul id="categorias" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">                          
+                                <li class="sidebar-item">
+                                    <a href="/categorias/nuevo" class="sidebar-link">Nueva</a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="/categorias/lista" class="sidebar-link">Listado</a>
+                                </li>                   
+                    </ul>
+                </li><% } %>
+                <%if(session.user.roles == 1 || session.user.roles == 3){%>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#proveedores" aria-expanded="false" aria-controls="proveedores">
+                        <i class="fa-regular fa-handshake" style="font-size: 1.5em;"></i>
+                        <span>Proveedores</span>
+                    </a>
+                    <ul id="proveedores" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">                          
+                                <li class="sidebar-item">
+                                    <a href="/proveedores/nuevo" class="sidebar-link">Nuevo</a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="/proveedores/lista" class="sidebar-link">Listado</a>
+                                </li>                   
+                    </ul>
+                </li><% } %>
+                <%if(session.user.roles == 1){%>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                        data-bs-target="#clientes" aria-expanded="false" aria-controls="clientes">
+                        <i class="fa-solid fa-person" style="font-size: 1.5em;"></i>
+                        <span>Clientes</span>
+                    </a>
+                    <ul id="clientes" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">                          
+                                <li class="sidebar-item">
+                                    <a href="/clientes/nuevo" class="sidebar-link">Nuevo</a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="/clientes/lista" class="sidebar-link">Listado</a>
+                                </li>                   
+                    </ul>
+                </li><% } %>
+                <%if(session.user.roles == 1){%>
+                    <!-- <li class="sidebar-item">
+                        <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+                            data-bs-target="#usuarios" aria-expanded="false" aria-controls="usuarios">
+                            <i class="fa-regular fa-user" style="font-size: 1.5em;"></i>
+                            <span>Usuarios</span>
+                        </a>
+                        <ul id="usuarios" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">                          
+                                    <li class="sidebar-item">
+                                        <a href="/usuarios/nuevo" class="sidebar-link">Nuevo</a>
+                                    </li>
+                                    <li class="sidebar-item">
+                                        <a href="/usuarios/lista" class="sidebar-link">Listado</a>
+                                    </li>                   
+                        </ul>
+                    </li> -->
+                    <% } %>
+                <%if(session.user.roles == 1){%>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed" id="reportes">
+                        <i class="fa-solid fa-chart-gantt" style="font-size: 1.5em;"></i>
+                        <span>Reportes</span>
+                    </a>                    
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link collapsed" id="divisas2" data-bs-toggle="modal" data-bs-target="#divisasModal">
+                      <i class="fa-solid fa-dollar-sign" style="font-size: 1.5em;"></i>
+                      <span>Divisas</span>
+                    </a>
+                </li>            
+                <% } %>               
+            </ul>
+            <!-- <div class="sidebar-footer">
+                <a href="/auth/login" class="sidebar-link">
+                    <i class="fa-solid fa-right-from-bracket fa-flip-horizontal" style="font-size: 1.5em;"></i>
+                    <span>Logout</span>
+                </a>
+            </div> -->
+        </aside>
+        <div class="main">
+            <nav class="navbar navbar-expand px-4 pt-3" style="z-index: 1058;">
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <span class="navbar-brand align-self-center" style="margin-right: 10px;" ><%= session.user.nombre%></span>
+                        <li class="nav-item dropdown align-self-center">
+                          <a href="#" data-bs-toggle="dropdown" class="nav-link dropdown-toggle">
+                            <i style="font-size: 1.5em; color: #02264d;" class="fa-solid fa-user-gear"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end rounded" style="background-color: #02264d;">
+                            <li><a class="sidebar-link" data-bs-toggle="modal" data-bs-target="confirmDeleteModal" id="cambiarContraseña">Cambiar contraseña</a></li>
+                            <li><a class="sidebar-link" href="/auth/cerrarSesion" id="cerrarSesion">Cerrar Sesión</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                </div>
+            </nav>
+            
+<!--     Modal de cambio de contraseña -->
+<form action="" id="nuevaContraseña">             
+    <div class="modal fade" id="cambioContraseñaModal" tabindex="-1" role="dialog" aria-labelledby="cambioContraseñaModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between">
+                    <h5 class="modal-title" id="cambioContraseñaModalLabel">Cambiar Contraseña</h5>
+                    <div class="btn-close" data-bs-dismiss="modal"></div>
+                </div>
+                <div class="modal-body col-sm-12">
+                    <div class="row form-group text-center d-flex justify-content-center">
+                        <div class="col-sm-6">
+                            <label for="contraseñaA" class="d-block text-center">Ingresa la contraseña actual</label>
+                            <input class="form-control" type="password" id="contraseñaA" name="contraseñaA" required>
+                        </div>                            
+                    </div>
+                    <div class="row form-group text-center d-flex justify-content-center">
+                        <div class="col-sm-6">
+                            <label for="contraseñan" class="d-block text-center">Ingresa la nueva contraseña</label>
+                            <input class="form-control" type="password" id="contraseñan" name="contraseñan" required>
+                        </div>                            
+                    </div>
+                    <div class="row form-group text-center d-flex justify-content-center">
+                        <div class="col-sm-6">
+                            <label for="contraseñaN" class="d-block text-center">Confirma la nueva contraseña</label>
+                            <input class="form-control" type="password" id="contraseñaN" name="contraseñaN" required>
+                        </div>                            
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmarCambio">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>                
+<!--     Modal de cambio de contraseña -->
+<!--     Modal de reportes -->       
+    <div class="modal fade modal-lg" id="modalReportes" tabindex="-1" role="dialog" aria-labelledby="modalReporteComprasLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between">
+            <h5 class="modal-title" id="modalReporteComprasLabel">Generar Reporte</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">                
+                <div class="row">
+                    <div class="col-sm-11 mb-2">
+                        <div class=" row d-flex justify-content-start">
+                            <div class="col-sm-4">
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <label for="fechaInicioC">Fecha de Inicio</label>
+                                <input class="form-control" type="date" id="fechaInicioC" name="fechaInicioC" required>
+                                    </div>                                    
+                                </div>                                
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <label for="fechaFinC">Fecha de Fin</label>
+                                        <input class="col form-control" type="date" id="fechaFinC" name="fechaFinC" required>
+                                    </div>                                    
+                                </div>                                
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="row">
+                                    <div class="col-sm-9">
+                                        <label for="tipo">Tipo</label>
+                                        <select id="tipo" name="tipo" class="form-select">
+                                            <option value="">Seleccione</option>
+                                            <option value="1">Pedidos</option>
+                                            <option value="2">Ventas</option>
+                                        </select>
+                                    </div>                                    
+                                </div>                                
+                            </div>
+                        </div>
+                    </div>                    
+                </div>                    
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="generarReporte">Confirmar</button>
+            </div>
+        </div>
+        </div>
+    </div>             
+<!--     Modal de reportes -->
+<!--     Modal de divisas -->   
+<div id="divisasModal" class="modal fade" tabindex="-1" aria-labelledby="divisasModalLabel" aria-hidden="true" style="z-index: 1054;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="divisasModalLabel">Divisas</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="divisasModalBody">
+          <!-- Aquí se cargará el contenido dinámico -->
+        </div>
+      </div>
+    </div>
+  </div>
+<!--     Modal de divisas -->   
+
+<div id="contenedor-mensajes"></div>        
+<script src="/js/general.js"></script> 
+    <script>
+        $(document).ready(function(){      
+
+            $(".main").fadeIn(1500)
+            $(".wrapper").fadeIn(1500)
+            $("#cambiarContraseña").on('click', function(){
+                $('#cambioContraseñaModal').modal('show');
+            })    
+            $("#confirmarCambio").on('click', function(){
+                var formData = {
+                    codigo : $("#codigo").val(),
+                    contraseñaNueva : $("#contraseñaN").val()
+                }
+                formData = JSON.stringify(formData);
+                if (!procesarFormulario("nuevaContraseña")) return false;                        
+                if($("#contraseñan").val() != $("#contraseñaN").val()){
+                    mostrarMensaje("error", "La nueva contraseña no coincide");
+                }
+                if($("#contraseñaN").val() == $("#contraseñaA").val()){
+                    mostrarMensaje("error", "La nueva contraseña no puede ser igual a la anterior");
+                }
+                var contraseña = $("#contraseñaN").val();
+                if (contraseña.length < 4) {
+                    mostrarMensaje("error", "La nueva contraseña debe tener al menos 4 caracteres.");
+                    return;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '/auth/cambiarContrasena', // Reemplaza con la URL del servidor donde procesas los datos
+                    data: formData,
+                    contentType: 'application/json',
+                    success: function(response) {
+                        // Manejar la respuesta del servidor
+                        $("#cambioContraseñaModal").modal('hide');
+                        mostrarMensaje("completado", "Se ha modificado la contraseña de forma exitosa");                        
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {                                
+                        $('#respuesta').html('<p>Ocurrió un error: ' + textStatus + ' - ' + errorThrown + '</p>');
+                    }
+                });
+            })
+            $("#reportes").on('click', function(){
+                $('#modalReportes').modal('show')
+            })
+            $("#generarReporte").on('click', function(){
+                var formData = {
+                    fechaInicio : $("#fechaInicioC").val(),
+                    fechaFin : $("#fechaFinC").val(), 
+                    tipo: $("#tipo").val()
+                } 
+                if(formData.fechaInicio == "" || formData.fechaFin == "" || formData.tipo == ""){
+                    mostrarMensaje("error", "Todos los campos son obligatorios");
+                }else if(new Date(formData.fechaInicio) > new Date(formData.fechaFin)){
+                    mostrarMensaje("error", "La fecha de inicio debe ser una fecha anterior a la fecha de fin");
+                }else{
+                    formData = JSON.stringify(formData);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/reportes/reporteCompras', // Reemplaza con la URL del servidor donde procesas los datos
+                        data: formData,
+                        contentType: 'application/json',
+                        success: function(response) {
+                            $("#modalReportes").modal('hide');
+                            window.open(response.redirectUrl, '_blank');
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {                                
+                            $('#respuesta').html('<p>Ocurrió un error: ' + textStatus + ' - ' + errorThrown + '</p>')
+                        }
+                    })
+                }               
+            })
+            $('#divisas2').on('click', function(event){
+                event.preventDefault();
+                $.ajax({
+                    url: '/divisas/lista',
+                    method: 'GET',
+                    success: function(html) {
+                    $('#divisasModalBody').html(html);
+                    $('#divisasModal').modal('show'); // Muestra el modal usando jQuery
+                    },
+                    error: function(xhr, status, error) {
+                    console.log('Error al cargar el modal de divisas:', error);
+                    }
+                });
+            });
+
+        })
+    </script>
+            <main class="content px-3">
+                <div class="container-fluid">

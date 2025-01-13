@@ -1,0 +1,12 @@
+.truncate-multiline {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    line-clamp: 3;
+    max-height: 4.5em; /* Adjust height for 3 lines */
+}
+.gridjs-wrapper .gridjs .gridjs-wrapper table.gridjs-table tbody tr td {
+font-size: 0.1em; /* Cambiar el tamaño del texto a 0.8em */
+}

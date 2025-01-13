@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="/css/mermaid.min.css">
+<style>
+  .truncate-multiline {
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              -webkit-line-clamp: 3; /* Limit to 3 lines */
+              line-clamp: 3;
+              max-height: 4.5em; /* Adjust height for 3 lines */
+          }
+  .gridjs-wrapper .gridjs .gridjs-wrapper table.gridjs-table tbody tr td {
+      font-size: 0.1em; /* Cambiar el tamaño del texto a 0.8em */
+  }
+</style>     
+<div id="wrapper" class="container">
+    <div id="gridjs-table"></div>
+</div>
+<div id="contenedor-mensajes"></div>  
+<script src="/js/general.js"></script> 
+<script>
+    $(document).ready(function() { 
+    // Obtener los datos desde el servidor
+    fetch('/divisas')
+        .then(response => response.json())
+        .then(data => {
+            // Configurar Grid.js
+            new gridjs.Grid({
+                columns: [                        
+                    { id: 'fecha_creacion', name: 'Fecha'},
+                    {id: 'valor', name: 'Valor'}
+                ],
+                data: data,
+                pagination: {
+                    enabled: true,
+                    limit: 10
+                },
+                search: true,
+                sort: true,
+                resizable: true,
+                language: {
+                    search: {
+                        placeholder: 'Buscar...'
+                    },
+                    pagination: {
+                        previous: 'Anterior',
+                        next: 'Siguiente',
+                        showing: 'Mostrando',
+                        results: () => 'Filas'
+                    }
+                }
+            }).render(document.getElementById('gridjs-table'));
+        });
+    });            
+</script>

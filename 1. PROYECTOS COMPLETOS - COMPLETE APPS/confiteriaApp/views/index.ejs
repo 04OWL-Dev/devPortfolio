@@ -1,0 +1,283 @@
+
+<%- include('header') %>
+
+
+
+
+<!-- plugin css -->
+<!-- <link href="/assets/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" /> -->
+
+<!-- swiper css --> 
+<link rel="stylesheet" href="/assets/libs/swiper/swiper-bundle.min.css"> 
+
+<style>
+    .project-list-table td, .project-list-table th {
+        padding: 0.5rem; /* Ajusta el padding a tu gusto */
+    }
+</style>
+
+<!-- Bootstrap Css -->
+<!-- <link href="/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" /> -->
+<!-- Icons Css -->
+<!-- <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" /> -->
+<!-- App Css-->
+<link href="/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+
+<style>
+    .main-content {
+            display: none; /* Ocultar el contenido inicialmente */
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .imagen{
+        display: none;
+    }
+</style>
+
+    <% if (session.user.roles == 2 || session.user.roles == 3 ) { %>
+        <div class="main-content text-center">
+            <img src="/img/logoHD.png" style="width: 40%; height: 40%; object-fit: cover;">
+        </div>
+    <% } else { %>
+        
+        <div class="main-content" style="display: none;">
+            <div class="page-content">
+                
+                <div class="container-fluid">                    
+                    
+                    <div class="row">
+                        <div class="col-xl-8">
+                            <div class="card">
+                            <div class="card-body pb-2">
+                                
+        
+                                <div class="row align-items-center">
+                                    <div class="col-xl-4">
+                                            <div class="card bg-light mb-0">
+                                                <div class="card-body">
+                                                    <div class="py-2">
+                                                        <h5>Ingresos Anuales Totales:</h5>
+                                                    <h2 class="mt-4 pt-1 mb-1"><%= ventasAnuales  %></h2>
+                                                            
+                                                    <div class="d-flex mt-4 align-items-center">
+                                                        <div id="mini-1" data-colors='["--bs-success"]' class="apex-charts"></div>
+                                                        <div class="ms-3">
+                                                            <span class="badge" style="background-color: #000;"><i class="mdi mdi-arrow-down me-1"></i><%= porcentaje 
+                                                                 %></span>
+                                                        </div>
+                                                    </div>
+        
+                                                    
+                                                </div>
+                                                </div>
+                                                
+                                            </div>
+                                    </div>
+        
+                                    <div class="col-xl-8">
+                                    <div>
+                                        <div id="column_chart" data-colors='["--bs-primary", "--bs-primary-rgb, 0.2"]' class="apex-charts" dir="ltr"></div>  
+                                    </div>
+                                </div>
+                                </div>
+        
+                            </div>
+        
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="card">
+                                <div class="card-body pb-3">
+                                    <div class="d-flex align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title mb-2">Últimas Ventas</h5>
+                                        </div>
+                                    </div>
+        
+                                    <div class="">
+                                        <div class="table-responsive">
+                                            <table class="table project-list-table table-nowrap align-middle table-borderless mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col" class="p-0">Código</th>
+                                                        <th scope="col" class="p-0" style="width: 210px">Cliente</th>
+                                                        
+                                                        <th scope="col" class="p-0">Cantidad</th>                                                    
+                                                    </tr>
+                                                </thead>
+                                                <tbody> 
+                                                    <% ventas.forEach(function(venta) { %>
+                                                        <tr>
+                                                            <td class="p-0 w-50"><%= venta.codigo %></td>
+                                                            <td class="p-0 w-50"><%= venta.nombre_cliente %></td>
+                                                            
+                                                            <td class="p-0 w-50">$<%= venta.total_venta.toFixed(2) %></td>
+                                                        </tr>
+                                                    <% }); %>                   
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+                       
+                    </div><!-- end row-->                
+        
+                </div>
+                <!-- container-fluid -->
+
+            </div>
+            <!-- End Page-content -->
+        
+            
+        </div>
+        <div class="d-flex flex-column justify-content-center" style="height: 225px; padding-bottom: 50px;">
+            <div class="container-fluid" style="height: 220px;">
+                <div class="row d-flex justify-content-center align-items-center style="height: 100%;">
+                    <img class="imagen mt-4" src="/img/logoHD.png" style="width: 20%; height: auto;">
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalDivisas" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"   data-bs-backdrop = "static" data-bs-keyboard="false">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between">
+                  <h5 class="modal-title" id="myModalLabel">Introducir valor de divisas</h5>
+                  <!-- <div class="btn-close" data-bs-dismiss="modal"></div> -->
+                </div>
+                <div class="modal-body d-flex justify-content-center">
+                  <form class="col-sm-3">
+                    <div class="form-group d-flex justify-content-center" style="width: 100%;">
+                        <input type="text" class="form-control" id="dolares" placeholder="Bs. 0.00">
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button> -->
+                  <button type="button" class="btn btn-primary" id="guardarValorDivisa">Guardar</button>
+                </div>
+              </div>
+            </div>
+        </div>
+          
+    <% } %>
+<!-- JAVASCRIPT -->
+<!--  <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script> -->
+ <script src="/assets/libs/metismenujs/metismenujs.min.js"></script>
+ <script src="/assets/libs/simplebar/simplebar.min.js"></script>
+ <script src="/assets/libs/feather-icons/feather.min.js"></script>
+ <!-- apexcharts -->
+ <script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+ <!-- Vector map-->
+ <script src="/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+ <script src="/assets/libs/jsvectormap/maps/world-merc.js"></script>
+ <!-- swiper js -->
+ <script src="/assets/libs/swiper/swiper-bundle.min.js"></script> 
+ <script src="/assets/js/pages/dashboard.initN.js"></script>
+ <script src="/assets/js/app.js"></script>
+ <script src="/js/general.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#header").fadeIn(1500)
+        $('.main-content').fadeIn(1500);
+        $('.imagen').fadeIn(1500);   
+        if(localStorage.getItem('bandera')){
+            $("#modalDivisas").modal('show')      
+        }
+        $("#guardarValorDivisa").on('click', function(){
+            $.ajax({
+                url: '/divisas/almacenarValor', 
+                type: 'POST', 
+                data: {valor: $("#dolares").val()},
+                success:function () {
+                    $("#modalDivisas").modal('hide');
+                    localStorage.removeItem('bandera')
+                }, 
+                error: function () {
+                    mostrarMensaje('error', 'Error en el guardado del valor de divisa, revise nuevamente.')
+                }
+            })
+        })
+        $.ajax({
+            url: "/ventas/totales",
+            type: "get",
+            dataType: 'JSON',
+            success: function(data) {                
+                if(data){
+                    let total = [];
+                    let cantidad = [];                
+                    data.forEach(dato => {
+                        total.push(dato.total);
+                        cantidad.push(dato.cantidad);                      
+                    });
+                    
+                    // Configuración y renderización del gráfico de barras (column_chart)
+                    options = {
+                        chart: { height: 410, type: "bar", toolbar: { show: false } },
+                        plotOptions: {
+                            bar: { borderRadius: 3, horizontal: false, columnWidth: "64%", endingShape: "rounded" }
+                        },
+                        dataLabels: { enabled: false },
+                        stroke: { show: true, width: 2, colors: ["transparent"] },
+                        series: [
+                            /* { name: "Total de Ingresos", data: total }, */
+                            { name: "Cantidad de Ventas", data: cantidad }
+                        ],
+                        colors: chartBarColors = getChartColorsArray("column_chart"),
+                        xaxis: { categories: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"] },
+                        grid: { borderColor: "#f1f1f1" },
+                        fill: { opacity: 1 },
+                        legend: { show: false },
+                        tooltip: { y: { formatter: function(e) { return e; } } }
+                    };
+                    chart = new ApexCharts(document.querySelector("#column_chart"), options);
+                    chart.render();
+
+                    // Configuración y renderización del gráfico de líneas pequeño (mini-1)
+                    var chartBarColors = getChartColorsArray("mini-1");
+                    var options = {
+                        series: [{ data: total }],
+                        chart: { type: "line", width: 180, height: 55, sparkline: { enabled: true } },
+                        colors: chartBarColors,
+                        stroke: { curve: "smooth", width: 2.5 },
+                        tooltip: {
+                            fixed: { enabled: false },
+                            x: { show: false },
+                            y: { title: { formatter: function(e) { return ""; } } },
+                            marker: { show: false }
+                        }
+                    };
+                    var chart = new ApexCharts(document.querySelector("#mini-1"), options);
+                    chart.render();
+
+                }else{
+                    mostrarMensaje("error", "Revise los datos y vuelva a intentar")
+                }
+            },
+            error: function() {
+                //console.error('Error fetching autocomplete data');
+            }
+        });
+
+        $.ajax({
+
+            url: "/ventas/comparativaMeses",
+            type: "get",
+            dataType: 'JSON',
+            success: function(data) {                
+
+            },
+            error: function() {
+                //console.error('Error fetching autocomplete data');
+            }
+        })      
+    })
+
+</script>
+<%- include('footer') %>

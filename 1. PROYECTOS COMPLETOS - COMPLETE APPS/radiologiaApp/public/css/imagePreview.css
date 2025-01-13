@@ -1,0 +1,26 @@
+.foto{
+    overflow: hidden;
+    position: relative;
+}
+.foto input[type="file"]{
+    position: absolute;
+    font-size: 5px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.foto span{
+    display: none;
+}
+#add-image-preview{
+    background-color: white;
+    height: 250px;
+}
+.image-container {
+    display: flex; /* Utiliza flexbox para distribuir las imágenes horizontalmente */
+    flex-wrap: wrap; /* Permite que las imágenes se ajusten a la siguiente línea si es necesario */
+    gap: 20px; /* Espacio entre imágenes */
+    justify-content: center; /* Centra las imágenes en el contenedor */
+    width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
+}

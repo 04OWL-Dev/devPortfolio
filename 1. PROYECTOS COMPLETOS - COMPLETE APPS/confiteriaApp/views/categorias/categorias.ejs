@@ -1,0 +1,217 @@
+<%- include('../header') %>
+<link rel="stylesheet" href="/css/mermaid.min.css">
+<style>
+  .truncate-multiline {
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              -webkit-line-clamp: 3; /* Limit to 3 lines */
+              line-clamp: 3;
+              max-height: 4.5em; /* Adjust height for 3 lines */
+          }
+  .gridjs-wrapper .gridjs .gridjs-wrapper table.gridjs-table tbody tr td {
+      font-size: 0.1em; /* Cambiar el tamaño del texto a 0.8em */
+  }
+</style>
+<h2 class="text-center">Listado de Categorías</h2>         
+
+    <div id="wrapper" class="container">
+        <a href="/categorias/nuevo" class="btn btn-primary">Nuevo</a>
+        <div id="gridjs-table"></div>
+    </div>
+
+    <div id="contenedor-mensajes"></div>  
+
+<!--     Modal de eliminacion -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true" style="z-index: 1056;">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                <div class="btn-close" data-bs-dismiss="modal"></div> 
+            </div>
+            <div class="modal-body">
+              ¿Estás seguro de que deseas eliminar esta Categoría?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="button" class="btn btn-danger" id="confirmDeleteButton">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+<!--     Modal de eliminacion -->
+    
+    <!--       Modal de detalles.  -->
+<div class="modal fade " id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">         
+          <div class="btn-close" data-bs-dismiss="modal"></div>          
+        </div>
+        <div class="modal-body">
+          <!-- Aquí se cargará el contenido dinámico -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>         
+        </div>
+      </div>
+    </div>
+  </div>
+<!--   Fin Modal de detalles.  -->
+
+
+    <script src="/js/general.js"></script> 
+    <script>
+
+        $(document).ready(function() { 
+
+            const mensaje = localStorage.getItem('mensaje');
+
+            if (mensaje) {
+                mostrarMensaje("completado", mensaje);
+                localStorage.removeItem('mensaje'); // Limpiar el mensaje después de mostrarlo
+            }
+
+            $(document).on('click', '.eliminarCategoria', function(event) {            
+                const productId = $(this).data('id');
+                const $row = $(this).closest('tr'); // Obtener la fila actual para posibles actualizaciones
+
+                // Guardar el ID del producto y la fila en atributos de data del modal
+                $('#confirmDeleteModal').data('productId', productId).data('row', $row).modal('show');
+            });
+
+            $('#confirmDeleteButton').on('click', function() {
+            const modal = $('#confirmDeleteModal');
+            const productId = modal.data('productId');
+            const $row = modal.data('row');
+
+                $.ajax({
+                    url: `/categorias/${productId}/eliminar`,
+                    type: 'GET', // Cambiar el tipo de solicitud a 'GET'
+                    success: function(response) {                           
+
+                        // Actualizar la tabla o eliminar la fila
+                        $row.remove(); // O actualiza la tabla según sea necesario
+                        // Ocultar el modal
+                        modal.modal('hide');
+                        $("#myModal").modal('hide');
+                        localStorage.setItem('mensaje', 'Se ha eliminado la categoría de forma exitosa');
+                        window.location.href = '/categorias/lista'
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        // Manejo de errores
+
+                        console.log(textStatus, errorThrown);
+                    }
+                });
+            });
+
+            let i = 0;
+            $(document).on('click', '.detalles', function() {
+                i++;
+                var id = $(this).data('id');
+                var url = `/categorias/detallesCategoria/${id}`
+                
+                /* $('#myModal .modal-body').load(`/productos/detallesProducto/${id}`); */
+                // Realizar la solicitud AJAX para cargar el contenido
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        
+                        if(i==1){
+                            // Insertar el contenido en el cuerpo del modal
+                            $('#myModal .modal-footer').append(`<a data-id="${id}" class="btn btn-danger eliminarCategoria">Eliminar Categoría</a>`);
+
+                            $('#myModal .modal-footer').append(`<a href="/categorias/modificarCategoria/${id}" class="btn btn-primary">Modificar Categoría</a>`);
+                        }                  
+                        $('#myModal .modal-body').html(response);
+                        // Mostrar el modal
+                        $('#myModal').modal('show');
+                        },
+                    error: function() {
+                    $('#myModal .modal-body').html('<p>Error al cargar el contenido.</p>');
+                    $('#myModal').modal('show');
+                    }
+                });
+            });
+            
+        })
+
+        // Obtener los datos desde el servidor
+        fetch('/categorias')
+            .then(response => response.json())
+            .then(data => {
+                // Configurar Grid.js
+                new gridjs.Grid({
+                    columns: [                        
+                        { id: 'codigo', name: 'Código' },
+                        {
+                            id: 'nombre',
+                            name: 'Nombre',
+                            formatter: (cell) => gridjs.html(`<div class="truncate-multiline">${cell}</div>`)
+                        },
+                        { id: 'descripcion', name: 'Descripción'},
+                        /* {
+                            id: 'acciones-modificar',
+                            name: 'Modificar',
+                            formatter: (cell, row) => {
+                                return gridjs.html(`                                  
+
+                                    <div class= "d-flex justify-content-center" style="width:100%">
+                                        <a href="/categorias/modificarCategoria/${row.cells[0].data}" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i></a>
+                                    </div>  
+                                `);
+                            }
+                        }, */
+                        {
+                            id: 'acciones-detalle',
+                            name: 'Detalle',
+                            formatter: (cell, row) => {
+                                return gridjs.html(`
+                                    <div class= "d-flex justify-content-center" style="width:100%">
+                                        <div class="btn btn-secondary detalles" data-id="${row.cells[0].data}" data-bs-toggle="modal" data-bs-target="#myModal">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                        </div>
+                                    </div>                                
+                                `);
+                            }
+                        },
+                    /* {
+                        id: 'acciones-eliminar',
+                        name: 'Eliminar',
+                        formatter: (cell, row) => {
+                            return gridjs.html(`
+                                
+                                <div class= "d-flex justify-content-center" style="width:100%">
+                                    <a data-id = "${row.cells[0].data}" class="btn btn-danger eliminarCategoria"><i class="fa-solid fa-trash"></i></a> 
+                                </div>  
+                            `);
+                        }
+                    } */
+                    ],
+                    data: data,
+                    pagination: {
+                        enabled: true,
+                        limit: 10
+                    },
+                    search: true,
+                    sort: true,
+                    resizable: true,
+                    language: {
+                        search: {
+                            placeholder: 'Buscar...'
+                        },
+                        pagination: {
+                            previous: 'Anterior',
+                            next: 'Siguiente',
+                            showing: 'Mostrando',
+                            results: () => 'Filas'
+                        }
+                    }
+                }).render(document.getElementById('gridjs-table'));
+            });
+    </script>
+<%- include('../footer') %>   

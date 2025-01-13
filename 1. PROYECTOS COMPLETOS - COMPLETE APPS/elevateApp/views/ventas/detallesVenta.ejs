@@ -1,0 +1,112 @@
+
+<div class="rounded row">
+    <h2 class="text-center"><%= datos.encabezado.codigo %></h2>  
+            <div>
+                <div class="row mb-2">                       
+                    <div class="col-sm-4 ">
+                        <div class=""><label for="cliente">Cliente</label></div>                                
+                        <div class="form-group">                                
+                            <div class="input-group">
+                                <input type="hidden" name="codigo_cliente" id="codigo_cliente" />
+                                <input readonly class="form-control"  type="search" id="cliente" name="cliente" value="<%= datos.encabezado.nombre %>" >
+                            </div> 
+                        </div>                   
+                    </div>
+                    <div class="col-sm-3 ">
+                        <div class=""><label for="fechacompra">Fecha</label></div>
+                        <div><input readonly class="form-control"  type="date" id="fechacompra" name="fechacompra" value="<%= datos.encabezado.fechac %>"></div>
+                    </div>                                
+                    <div class="col-sm-2 ">
+                        <div class=""><label for="totalVenta">Total Venta</label></div>
+                        <div><input readonly class="form-control"  type="number" id="totalVenta" name="totalVenta" value="<%= datos.encabezado.total_venta %>"></div>
+                    </div>
+                    <div class="col-sm-2 ">
+                        <div class=""><label for="valorDivisa">Valor Divisa</label></div>
+                        <div><input readonly class="form-control"  type="number" id="valorDivisa" name="valorDivisa" value="<%= datos.encabezado.precio_divisa %>"></div>
+                    </div>                    
+                </div>
+                <hr>
+                <p class="text-center">Detalles de Cancelación</p>
+                <hr>
+                <div class="row mb-2">
+                    <div class="col-sm-2">
+                        <div class=""><label for="debito">Debito</label></div>
+                        <div><input readonly class="form-control"  type="number" id="debito" name="debito" value="<%= datos.encabezado.total_debito %>"></div>
+                    </div> 
+                    <div class="col-sm-2">
+                        <div class=""><label for="debito">Credito</label></div>
+                        <div><input readonly class="form-control"  type="number" id="credito" name="credito" value="<%= datos.encabezado.total_credito %>"></div>
+                    </div>
+                    <div class="col-sm-2 ">
+                        <div class=""><label for="debito">Efectivo</label></div>
+                        <div><input readonly class="form-control"  type="number" id="efectivo" name="efectivo" value="<%= datos.encabezado.total_efectivo %>"></div>
+                    </div>
+                    <div class="col-sm-2 ">
+                        <div class=""><label for="debito">Biopago</label></div>
+                        <div><input readonly class="form-control"  type="number" id="biopago" name="biopago" value="<%= datos.encabezado.total_biopago %>"></div>
+                    </div> 
+                    <div class="col-sm-2 ">
+                        <div class=""><label for="debito">Pago Móvil</label></div>
+                        <div><input readonly class="form-control"  type="number" id="pgmovil" name="pgmovil" value="<%= datos.encabezado.total_pgmovil %>"></div>
+                    </div> 
+                    <div class="col-sm-2 ">
+                        <div class=""><label for="debito">Divisas</label></div>
+                        <div><input readonly class="form-control"  type="number" id="divisa" name="divisa" value="<%= datos.encabezado.total_divisa %>"></div>
+                    </div>                     
+                </div>
+               
+            
+                <div class="row d-flex justify-content-between">                    
+
+                    <div class="col-sm-8 d-flex justify-content-start mb-1">
+
+                        <div class="mx-2 col-sm-2">
+                            <div class=""><label for="debito">Descuento</label></div>
+                            <div><input readonly class="form-control"  type="number" id="divisa" name="divisa" value="<%= datos.encabezado.total_descuento %>"></div>
+                        </div>
+                      
+                        <div class="col-sm-2">
+                            <div><label for="debito">Deuda</label></div>
+                            <div class="mx-1"><input readonly class="form-control"  type="number" id="divisa" name="divisa" value="<%= datos.encabezado.total_deuda %>"></div>                            
+                        </div>                
+                        
+                    </div>
+                    <hr>                   
+
+                </div>
+
+               
+                
+                
+ </div>      
+
+
+<table class="col-sm-12 table table-hover table-bordered mb-2" id="tabla">
+<thead>
+    <tr>
+        <th class="texto">Imágen</th>
+        <th class="texto">Código</th>
+        <th class="texto">Producto</th>
+        <th class="texto">Precio</th>
+        <th class="texto">Cantidad</th>
+        <th class="texto">Total</th>                
+    </tr>
+</thead>
+<tbody>
+    <% datos.detalle.forEach(producto => { %>
+        <tr>
+            <td class="imagen"><img src="/img/productos/<%=producto.codigo_producto%>.png" width="50px" height="50px"></td>
+          <td><%= producto.codigo_producto %></td>
+          <td><%= producto.nombre_producto %></td>
+          <td><%= producto.precio %></td>
+          <td><%= producto.cantidad %></td>
+          <td><%= producto.total %></td>
+        </tr>                                                  
+        <% }) %>
+</tbody>
+</table>   
+
+</div>
+
+
+

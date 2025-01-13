@@ -1,0 +1,327 @@
+<%- include('../header') %>
+<h2 class="text-center">Nueva Radiografía</h2>
+<form enctype="multipart/form-data" id="datosRadiografia" novalidate>
+    <div class="row-sm-2 mb-1 d-flex justify-content-between">
+        <div class="col-sm-1">
+            <a href="/radiografias/general" class="btn btn-primary">Regresar</a>      
+        </div>
+        <div class="row">
+            <div class="col-sm-12 d-flex justify-content-end">
+                <div>
+                    <input class="btn btn-primary" value="Guardar" id="guardar" type="submit">
+                </div>
+                <div class="ms-2">
+                    <input class="btn btn-primary" value="Enviar" id="enviar" type="submit">
+                </div>
+            </div>
+        </div>           
+    </div>                               
+    <div class="d-flex justify-content-center"><h6>Datos del Paciente</h5></div> 
+    <input type="hidden" id="idPaciente" name="codigoPaciente" value="null">       
+    <div class="row g-3">
+        <div class="col-sm-2" style="width: 9%;">
+            <label for="cedula">C.I</label>
+            <input class="form-control"   type="text" id="cedula" name="cedula" required>  
+        </div>
+        <div class="col-sm-2">
+            <label for="nombre">Nombres</label>
+            <input class="form-control"   type="text" id="nombre" name="nombre" required>  
+        </div>
+        <div class="col-sm-2">
+            <label for="apellido">Apellidos</label>
+            <input class="form-control"   type="text" id="apellido" name="apellido" required>  
+        </div>       
+        <div class="col-sm-2" style="width: 12%;">
+            <label for="telefono">Teléfono</label>
+            <input class="form-control"   type="text" id="telefono" name="telefono" required>  
+        </div>
+        <div class="col-sm-5">
+            <label for="direccion">Dirección</label>
+            <input class="form-control"   type="text" id="direccion" name="direccion" required>  
+        </div>
+    </div>
+    <hr style="margin: 0.5%;">
+    <div class="d-flex justify-content-center" style="margin-bottom: 0px;"><h6>Información de la Radiografía</h5></div> 
+    <div class="row mb-5 g-2 d-flex" style="margin-top: 0px;">
+        <input type="hidden" value="<%=JSON.stringify(tiposZonas)%>" id="tiposZonas">
+        <!-- <div class="col-sm-1">
+            <label for="codigo">Código</label>
+            <input class="form-control"  type="text" id="codigo" name="codigo" required>  
+        </div> -->
+        <div class="col-sm-2" style="width: 9.5%;">
+            <label for="fecha">Fecha</label>
+            <input readonly class= "form-control" type="text" id="fecha" name="fecha" value="<%=fechaActual%>" required>   
+        </div>
+        <div class="col-sm-1" style="width: 15%;">
+            <div class="form-group">
+                <label for="tipo">Tipo de Radiografía</label>
+                <select name="tipo" id="tipo" class="form-control form-select" style="margin-bottom: 1x;" required>
+                    <option hidden disabled selected>Seleccione</option>
+                    <% tiposZonas.forEach(tipo => { %>
+                        <option value="<%=tipo.id%>"><%=tipo.nombre%></option>
+                    <% });%>
+                </select>
+            </div>        
+        </div>        
+        <div class="col-sm-2" style="width: 15%; display: none;" id="zona-container">
+            <div class="form-group">
+                <label for="zona">Zona</label>
+                <select name="zona" id="zona" class="form-control form-select">
+                     <!-- Aquí se mostrarán las opciones del select -->
+                </select>
+            </div>        
+        </div>
+        <div class="col-sm-2" style="width: 15%;">
+            <div class="form-group">
+                <label for="tecnica">Técnica</label>
+                <select name="tecnica" id="tecnica" class="form-control form-select" required>
+                    <option hidden disabled selected>Seleccione</option>
+                    <% listaTecnicas.forEach(tecnica => { %>
+                        <option value="<%=tecnica.id%>"><%=tecnica.nombre%></option>
+                    <% }); %>
+                </select>
+            </div>        
+        </div>
+    </div>
+    <div class="foto col-sm-12">
+        <div class="text-center">
+            <div id="add-image-preview" class="image-container">
+                <!-- Aquí se mostrarán las previsualizaciones de las imágenes -->
+            </div>
+            <label class="btn btn-primary mb-2 d-block mx-auto col-sm-1" style="width: 7%;" for="imagen" id="fotol">Imagen</label>
+        </div>
+        <input style="display: none;" type="file" name="imagen" id="imagen" accept="image/*" class="form-control" multiple required>
+    </div>
+    <div class="col-sm-12 mt-3">
+        <i class="fa-solid fa-circle-exclamation" style="color: #333333;"></i>
+        <small style="color: #333333;">Haga click sobre la imagen para limpiarla.</small>
+    </div>
+</form>
+<div id="contenedor-mensajes"></div>             
+<script>
+    $(document).ready(function() {
+        validarTextoSinNumeros('nombre');
+        validarTextoSinNumeros('apellido');
+        validarCedulaTelefono('cedula')
+        validarCedulaTelefono('telefono')
+
+        $("#tipo").change(function() {          
+            let valores = []
+            let tiposZonas = JSON.parse($('#tiposZonas').val())
+            const value = $(this).val();
+
+            function introducirValores(value){
+                tiposZonas.forEach(tipo => {
+                    tipo.zonas.forEach(zona => {
+                        if(zona.tipo_radiografia_id == value){
+                            valores.push({value: `${zona.id}`, text: `${zona.nombre}`})
+                        }                        
+                    });
+                });
+            };
+
+            value == 2 && introducirValores(value)
+            value == 5 && introducirValores(value)
+            value == 7 && introducirValores(value)
+            value == 8 && introducirValores(value)
+            value == 9 && introducirValores(value)
+            value == 14 && introducirValores(value)
+
+            $('#zona').empty();
+            // Solo agrega la opción de marcador de posición si hay valores
+            if (valores.length > 0) {
+                $('#zona').append($('<option>', {
+                    hidden: true,
+                    disabled: true,
+                    selected: true,
+                    text: 'Seleccione'
+                }));
+                $("#zona-container").show();
+            }else{
+                $("#zona-container").hide();
+            }            
+            // Añade las opciones basadas en el array valores
+            $.each(valores, function (index, item) {
+                $('#zona').append($("<option>", {
+                    value: item.value,
+                    text: item.text
+                }));
+            });
+        });
+
+        $("#add-image-preview").attr("src", " "); 
+
+        $(document).on('click', '.preview', function() {
+            const dataUrl = $(this).attr('src'); // Obtiene el data URL
+            const blob = new Blob([new Uint8Array(atob(dataUrl.split(',')[1]).split('').map(c => c.charCodeAt(0)))], { type: dataUrl.split(',')[0].split(':')[1].split(';')[0] });
+            window.open(URL.createObjectURL(blob), '_blank'); // Abre la imagen en una nueva pestaña
+        });
+
+        $(document).on('click', '.close-btn', function() {
+            const imageContainer = $(this).closest('div');
+            imageContainer.remove();
+        });
+
+        // Mostrar vista previa de la imagen al seleccionar un archivo en el formulario de agregar producto
+        let files;
+        $("#imagen").change(function() {
+            files = $(this)[0].files;
+            var $preview = $("#add-image-preview");
+            $.each(files, function(index, file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    // Crear un contenedor para la imagen y la "X"
+                    var imageContainer = $('<div>', {
+                        style: 'position: relative; display: inline-block; width: 230px; height: 230px; margin: 5px;'
+                    });
+
+                    // Crear la imagen
+                    var img = $('<img>', {
+                        src: e.target.result,
+                        class: 'img-responsive mb-2 preview',
+                        width: '230px',
+                        height: '230px'
+                    });
+
+                    // Crear el botón "X"
+                    var closeButton = $('<button>', {
+                        html: '&times;', // "X" símbolo
+                        class: 'close-btn',
+                        style: 'position: absolute; top: 5px; right: 5px; font-size: 20px; cursor: pointer; background-color: transparent; border: none; color: gray;',
+                        click: function() { // Eliminar la imagen al hacer clic en la "X"
+                            $(this).closest('div').remove(); // Elimina el contenedor de la imagen
+                        }
+                    });
+
+                    // Añadir la imagen y la "X" al contenedor
+                    imageContainer.append(img).append(closeButton);
+
+                    // Añadir el contenedor al contenedor principal
+                    $preview.append(imageContainer);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        $('#guardar, #enviar').click(function() {
+        // Establecer una variable global para la ruta
+            if($(this).attr('id') == 'guardar'){
+                window.ruta = '/radiografias/guardarRadiografia'
+                window.estado = 1;
+            }else{
+                window.ruta = '/radiografias/guardarRadiografia'
+                window.estado = 2;
+            }
+        });      
+
+        $("#datosRadiografia").submit(function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+            if (!procesarFormulario("datosRadiografia")) return false;            
+            var formData = new FormData(this);
+            formData.append('estado', window.estado)
+
+            if($("#zona").val() === null || $("#zona").val() === ''){
+                formData.append('zona', null);
+            }
+
+            if(files.length > 3){
+                mostrarMensaje('error', 'Ha cargado más de 3 imágenes')
+                return false                
+            }else if(files.length == 0){
+                mostrarMensaje('error', 'Debe cargar imágenes')
+                return false
+            }else if($("#cedula").val().length < 6){
+                mostrarMensaje('error', 'La cédula debe tener al menos 6 digitos')
+                return false
+            }else if($("#telefono").val().length < 11){
+                mostrarMensaje('error', 'Número telefónico no válido, introduzca nuevamente')
+                return false
+            }
+
+            $.ajax({
+                url: `${window.ruta}`,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    // Aquí puedes manejar la respuesta del servidor
+                    localStorage.setItem('mensaje', 'Envío Exitoso');
+                    window.location.href = '/radiografias/general';                 
+                },
+                error: function(xhr) {
+                    const error = xhr.responseJSON
+                    mostrarMensaje('error', `El archivo ${error.nombre} ha sido utilizado previamente`)
+                }
+            });
+        });
+        
+        $("#cedula").autocomplete({
+            source: function(request, response){
+                $.ajax({
+                    url: "/pacientes/autocompletePacientes",
+                    type: "GET",
+                    data:{
+                        term: request.term// El termino representa la busqueda - Get. 
+                    },
+                    success: function(data) { 
+                        response(data.map(item => ({
+                                label: `${item.cedula}`,
+                                value: item.cedula, 
+                                id: item.id,
+                                cedula: item.cedula,
+                                nombre: item.nombres, 
+                                apellido: item.apellidos,
+                                telefono: item.telefono, 
+                                direccion: item.direccion
+                            })));
+                    },
+                    error: function() {
+                        console.error('Error al obtener datos de autocompletado de pacientes');
+                    }
+                });
+            },
+            minLength: 2, // Mínimo número de caracteres antes de lanzar la solicitud                
+            select: function (event, ui) {
+                event.preventDefault();               
+                $('#idPaciente').val(ui.item.id);                
+                $(this).val(ui.item.value)
+                $('#nombre').val(ui.item.nombre)
+                $("#apellido").val(ui.item.apellido)
+                $("#telefono").val(ui.item.telefono)
+                $("#direccion").val(ui.item.direccion)
+            }
+        })
+
+        $("#cedula").on("blur", function() {        
+            const valorIngresado = $(this).val().trim();
+            if (valorIngresado !== '') {
+                // Busca la opción en el autocompletado que coincida con el valor ingresado
+                $.ajax({
+                    url: "/pacientes/autocompletePacientes",
+                    type: "GET",
+                    data: {
+                        term: valorIngresado
+                    },
+                    success: function(data) {
+                        const pacienteEncontrado = data.find(item => item.cedula === valorIngresado);
+                        if (pacienteEncontrado) {
+                            // Completa los campos relacionados si se encuentra una coincidencia
+                            $('#idPaciente').val(pacienteEncontrado.id);
+                            $('#cedula').val(pacienteEncontrado.cedula);
+                            $('#nombre').val(pacienteEncontrado.nombres);
+                            $('#apellido').val(pacienteEncontrado.apellidos);
+                            $('#telefono').val(pacienteEncontrado.telefono);
+                            $('#direccion').val(pacienteEncontrado.direccion);
+                        }
+                    },
+                    error: function() {
+                        console.error('Error al verificar la cédula ingresada manualmente');
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+<%- include('../footer') %>    

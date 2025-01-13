@@ -1,0 +1,266 @@
+<h3 class="text-center">Detalles de la Radiografía</h3>
+<form enctype="multipart/form-data" id="datosRadiografia" novalidate>                               
+    <div class="d-flex justify-content-center"><h6>Datos del Paciente</h5></div>    
+    <div class="row g-3">
+        <div class="col-sm-2" style="width: 9%;">
+            <label for="cedula">C.I</label>
+            <input class="form-control"   type="text" id="cedula" name="cedula" value="<%=paciente.cedula%>" readonly>  
+        </div>
+        <div class="col-sm-2">
+            <label for="nombre">Nombres</label>
+            <input class="form-control"   type="text" id="nombre" name="nombre" value="<%=paciente.nombres%>" readonly>  
+        </div>
+        <div class="col-sm-2">
+            <label for="apellido">Apellidos</label>
+            <input class="form-control"   type="text" id="apellido" name="apellido" value="<%=paciente.apellidos%>" readonly>  
+        </div>       
+        <div class="col-sm-2" style="width: 12%;">
+            <label for="telefono">Teléfono</label>
+            <input class="form-control"   type="text" id="telefono" name="telefono" value="<%=paciente.telefono%>" readonly>  
+        </div>
+        <div class="col-sm-5">
+            <label for="direccion">Dirección</label>
+            <input class="form-control"   type="text" id="direccion" name="direccion"  value="<%=paciente.direccion%>" readonly>  
+        </div>
+    </div>
+    <hr style="margin: 0.5%;">
+    <div class="d-flex justify-content-center" style="margin-bottom: 0px;"><h6>Información de la Radiografía</h5></div> 
+    <div class="row mb-5 g-2 d-flex" style="margin-top: 0px;">
+        <div class="col-sm-2" style="width: 9.5%;">
+            <label for="fecha">Fecha</label>
+            <input readonly class= "form-control" type="text" id="fecha" name="fecha" value="<%=fecha%>" required>   
+        </div>
+        <div class="col-sm-1" style="width: 15%;">
+            <div class="form-group">
+                <label for="tipo">Tipo de Radiografía</label>
+                <input readonly class="form-control" type="text" id="tipo" name="tipo" value="<%=tipo_radiografia.nombre%>">
+            </div>        
+        </div>        
+        <%if(zona_radiografia && zona_radiografia.nombre){%>
+            <div class="col-sm-2" style="width: 15%;" id="zona-container">
+                <div class="form-group">
+                    <label for="zona">Zona</label>
+                    <input readonly class="form-control" type="text" id="zona" name="zona" value="<%=zona_radiografia.nombre%>">
+                </div>        
+            </div>
+        <%}%>        
+        <div class="col-sm-2" style="width: 15%;">
+            <div class="form-group">
+                <label for="tecnica">Técnica</label>
+                <input readonly class="form-control" type="text" id="tecnica" name="tecnica" value="<%=tecnica_radiografia.nombre%>">
+            </div>        
+        </div>
+    </div>
+    <div class="foto col-sm-12">
+        <div class="text-center">
+            <div id="add-image-preview" class="image-container">
+                <% imagenes.forEach(imagen => { %>
+                    <img src="<%=imagen.url%>" class="img-responsive mb-2 preview" width="230px" height="230px">
+                <%}); %>
+            </div>
+        </div>
+        <input style="display: none;" type="file" name="imagen" id="imagen" accept="image/*" class="form-control" multiple required>
+    </div>
+    <div class="col-sm-12 mt-3 mb-3">
+        <i class="fa-solid fa-circle-exclamation" style="color: #333333;"></i>
+        <small style="color: #333333;">Haga click sobre la imagen para ampliarla en una nueva pestaña.</small>
+    </div>
+
+    <% if(observaciones && tipo_usuario == 2 && estado_id == 7){ %>
+        <label for="observaciones" class="form-label">Observaciones de la Radiografía</label>
+        <textarea readonly class="form-control" id="observaciones" rows="5" style="min-height: 100px; max-height: 250px;" name="observaciones"><%=observaciones%></textarea>
+    <% } %>
+
+    <% if(observaciones && tipo_usuario == 1 && estado_id == 6){ %>
+        <label for="observaciones" class="form-label">Observaciones de la Radiografía</label>
+        <textarea readonly class="form-control" id="observaciones" rows="5" style="min-height: 100px; max-height: 250px;" name="observaciones"><%=observaciones%></textarea>
+    <% } %>
+    
+    <% if(informe && informe.contenido && informe.hallazgos && tipo_usuario == 1 && estado_id == 4){ %>
+        <label for="contenido" class="form-label">Contenido del Informe</label>
+        <textarea readonly class="form-control mb-4" id="contenido" rows="5" style="min-height: 100px; max-height: 250px;" name="contenido"><%=informe.contenido%></textarea>
+
+        <label for="hallazgos" class="form-label">Hallazgos del Informe</label>
+        <textarea readonly class="form-control" id="hallazgos" rows="5" style="min-height: 100px; max-height: 250px;" name="hallazgos"><%=informe.hallazgos%></textarea>
+    <% } %>
+    <% if(informe && informe.contenido && informe.hallazgos && tipo_usuario == 2 || tipo_usuario == 1 && estado_id == 5 || estado_id == 8){ %>
+        <label for="contenido" class="form-label">Contenido del Informe</label>
+        <textarea readonly class="form-control mb-4" id="contenido" rows="5" style="min-height: 100px; max-height: 250px;" name="contenido"><%=informe.contenido%></textarea>
+
+        <label for="hallazgos" class="form-label">Hallazgos del Informe</label>
+        <textarea readonly class="form-control" id="hallazgos" rows="5" style="min-height: 100px; max-height: 250px;" name="hallazgos"><%=informe.hallazgos%></textarea>
+    <% } %>
+    
+
+</form>
+<div id="contenedor-mensajes"></div>             
+<script>
+    
+    $(document).ready(function() {
+        validarTextoSinNumeros('nombre');
+        validarTextoSinNumeros('apellido');
+        validarCedulaTelefono('cedula')
+        validarCedulaTelefono('telefono')
+
+
+
+        if($("#zona").val() == null){
+            $(this).hide()
+        }
+
+        $("#add-image-preview").attr("src", " "); 
+
+        $(".preview").click(function(){
+            const src = $(this).attr('src')
+            window.open(src,'_blank')
+        })
+
+        // Mostrar vista previa de la imagen al seleccionar un archivo en el formulario de agregar producto
+        let files;
+        $("#imagen").change(function() {
+            files = $(this)[0].files;
+            var $preview = $("#add-image-preview");
+        
+
+            $.each(files, function(index, file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    // Crear una nueva etiqueta img para cada archivo
+                    var img = $('<img>', {
+                        src: e.target.result,
+                        class: 'img-responsive mb-2',
+                        id: 'preview',
+                        width: '230px', // Ajusta el tamaño según sea necesario
+                        height: '230px',// Mantiene la relación de aspecto
+                        click: function() { // Agregar evento de click para eliminar la imagen
+                            $(this).remove(); // Eliminar la imagen al hacer clic
+                        } 
+                    });
+                    // Añadir la imagen al contenedor existente
+                    $preview.append(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        $('#guardar, #enviar').click(function() {
+        // Establecer una variable global para la ruta
+            if($(this).attr('id') == 'guardar'){
+                window.ruta = '/radiografias/guardarRadiografia'
+                window.estado = 1;
+            }else{
+                window.ruta = '/radiografias/guardarRadiografia'
+                window.estado = 2;
+            }
+        });      
+
+        $("#datosRadiografia").submit(function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+            if (!procesarFormulario("datosRadiografia")) return false;            
+            var formData = new FormData(this);
+            formData.append('estado', window.estado)
+
+            if($("#zona").val() === null || $("#zona").val() === ''){
+                formData.append('zona', null);
+            }
+
+            if(files.length > 3){
+                mostrarMensaje('error', 'Ha cargado más de 3 imágenes')
+                return false                
+            }else if(files.length == 0){
+                mostrarMensaje('error', 'Debe cargar imágenes')
+                return false
+            }else if($("#cedula").val().length < 6){
+                mostrarMensaje('error', 'La cédula debe tener al menos 6 digitos')
+                return false
+            }else if($("#telefono").val().length < 11){
+                mostrarMensaje('error', 'Número telefónico no válido, introduzca nuevamente')
+                return false
+            }
+
+            $.ajax({
+                url: `${window.ruta}`,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    // Aquí puedes manejar la respuesta del servidor
+                    localStorage.setItem('mensaje', 'Envío Exitoso');
+                    window.location.href = '/radiografias/general';                 
+                },
+                error: function(xhr) {
+                    const error = xhr.responseJSON
+                    mostrarMensaje('error', `El archivo ${error.nombre} ha sido utilizado previamente`)
+                }
+            });
+        });
+        
+        $("#cedula").autocomplete({
+            source: function(request, response){
+                $.ajax({
+                    url: "/pacientes/autocompletePacientes",
+                    type: "GET",
+                    data:{
+                        term: request.term// El termino representa la busqueda - Get. 
+                    },
+                    success: function(data) { 
+                        response(data.map(item => ({
+                                label: `${item.cedula}`,
+                                value: item.cedula, 
+                                id: item.id,
+                                cedula: item.cedula,
+                                nombre: item.nombres, 
+                                apellido: item.apellidos,
+                                telefono: item.telefono, 
+                                direccion: item.direccion
+                            })));
+                    },
+                    error: function() {
+                        console.error('Error al obtener datos de autocompletado de pacientes');
+                    }
+                });
+            },
+            minLength: 2, // Mínimo número de caracteres antes de lanzar la solicitud                
+            select: function (event, ui) {
+                event.preventDefault();               
+                $('#idPaciente').val(ui.item.id);                
+                $(this).val(ui.item.value)
+                $('#nombre').val(ui.item.nombre)
+                $("#apellido").val(ui.item.apellido)
+                $("#telefono").val(ui.item.telefono)
+                $("#direccion").val(ui.item.direccion)
+            }
+        })
+
+        $("#cedula").on("blur", function() {        
+            const valorIngresado = $(this).val().trim();
+            if (valorIngresado !== '') {
+                // Busca la opción en el autocompletado que coincida con el valor ingresado
+                $.ajax({
+                    url: "/pacientes/autocompletePacientes",
+                    type: "GET",
+                    data: {
+                        term: valorIngresado
+                    },
+                    success: function(data) {
+                        const pacienteEncontrado = data.find(item => item.cedula === valorIngresado);
+                        if (pacienteEncontrado) {
+                            // Completa los campos relacionados si se encuentra una coincidencia
+                            $('#idPaciente').val(pacienteEncontrado.id);
+                            $('#cedula').val(pacienteEncontrado.cedula);
+                            $('#nombre').val(pacienteEncontrado.nombres);
+                            $('#apellido').val(pacienteEncontrado.apellidos);
+                            $('#telefono').val(pacienteEncontrado.telefono);
+                            $('#direccion').val(pacienteEncontrado.direccion);
+                        }
+                    },
+                    error: function() {
+                        console.error('Error al verificar la cédula ingresada manualmente');
+                    }
+                });
+            }
+        });
+
+    });
+</script>

@@ -1,0 +1,651 @@
+
+
+<%- include('../header') %>
+
+<form action="ventas/modificar" method="post" id="nventa">
+    <div class="rounded row">
+        <h2 class="text-center">Editar Venta <%= datos.encabezado.codigo %> </h2>  
+            <div>
+                <div class="row-sm-2 mb-3"><a href="/ventas/lista" class="btn btn-primary col-sm-1">Regresar</a></div>
+                <div class="row mb-2">
+                    <div class="col-sm-2 ">
+                        <div class=""><label for="numeroventa">N° Venta</label></div>    
+                        <div>
+                            <input readonly class="form-control" type="text" id="numeroventa" name="codigo" value="<%= datos.encabezado.codigo %>">
+                        </div>
+                    </div>    
+                    <div class="col-sm-4 ">
+                        <div class=""><label for="cliente">Cliente</label></div>
+                        <input type="hidden" name="codigo_cliente" id="codigo_cliente" value="<%= datos.encabezado.codigo_cliente %>"/>
+                        <div class="form-group">                                
+                            <div class="input-group">
+                                <input class="form-control"  type="search" id="cliente" name="cliente" value="<%= datos.encabezado.nombre %>" required>
+                                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalClientes"><i class="fa-solid fa-magnifying-glass"></i></a>
+                                <a href="/clientes/nuevo" target="_blank" id="añadir_cliente" type="button" class="btn btn-primary"><i class="fa-solid fa-plus"></i></a>
+                            </div> 
+                        </div>                   
+                    </div>
+                    <div class="col-sm-3 ">
+                        <div class=""><label for="fechaVenta">Fecha</label></div>
+                        <div><input class="form-control"  type="date" id="fechaVenta" name="fechaVenta" value="<%= datos.encabezado.fechac%>" required></div>
+                    </div>
+                    <div class="col-sm-2 ">
+                        <div class=""><label for="valorDivisa">Valor Divisa</label></div>    
+                        <div>
+                            <input readonly class="form-control" id="valorDivisa" name="valorDivisa" type="number" value="2">
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+
+                    <div class="col-sm-4">
+                        <div class=""><label for="producto">Producto</label></div>
+                        <input type="hidden" name="codigo_producto" id="codigo_producto" />                                
+                        <div class="input-group">
+                            <textarea class="form-control" name="producto" id="producto" rows="1"></textarea>                                  
+                            <button id="listadoProductos" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProductos" ><i class="fa-solid fa-table-list"></i></button>    
+                            <a href="/productos/nuevo" target="_blank" id="añadir_producto" type="button" class="btn btn-primary"><i class="fa-solid fa-plus"></i></a>                               
+                        </div>                                    
+                    </div>
+                    <div class="col-sm-2">
+                        <div class=""><label for="totalbs">Precio REF</label></div>
+                        <input readonly class="form-control" type="number" id="precio" name="precio">
+                    </div>
+                    <div class="col-sm-2">
+                        <div class=""><label for="cantidad">Cantidad</label></div>
+                        <div class="input-group">
+                            <input class="form-control" type="number" id="cantidad" name="cantidad">   
+                        </div>
+                    </div>
+                </div>
+                <div class=" row mb-2 d-flex justify-content-between">   
+                    <div class="col-sm-3">
+                        <div><label for="totalref">Total Producto REF</label></div>                        
+                        <input readonly class="form-control" id="total_producto" type="number" name="total_producto">
+                    </div> 
+                    <div class="col-sm-3">
+                        <div><label for="valordivisa">Total Venta REF</label></div>
+                        <input class="form-control" type="number" id="total_venta" name="total_venta" value="<%= datos.encabezado.total_venta%>">
+                    </div>                                               
+                </div>  
+                <div class="row mb-2 d-flex justify-content-between">
+                    <div class="col sm-3">
+                        <div class="btn btn-primary col-sm-3" id="agregar">Añadir Producto</div>
+                    </div>
+                    <div class="col sm-3 d-flex justify-content-end">
+                        <div class="btn btn-secondary col-sm-3" id="realizarPago">Realizar Pago</div>
+                    </div>
+                </div>
+            </div> 
+    </div>    
+
+
+    <table class="col-sm-12 table table-hover table-bordered mb-2" id="tabla">
+        <thead>
+            <tr>
+                <th class="texto">Imágen</th>
+                <th class="texto">Código</th>
+                <th class="texto">Producto</th>
+                <th class="texto">Precio</th>
+                <th class="texto">Cantidad</th>
+                <th class="texto">Total</th>
+                <th class="texto">Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% datos.detalle.forEach(producto => { %>
+                <tr class="filaI" id = "<%= producto.codigo_producto %>" >
+                    <td class="imagen"><img src="/img/productos/<%=producto.codigo_producto%>.png" width="50px" height="50px"></td>
+                  <td><%= producto.codigo_producto %></td>
+                  <td><%= producto.nombre_producto %></td>
+                  <td><%= producto.precio %></td>
+                  <td class="cantidad"><%= producto.cantidad %></td>
+                  <td class="total"><%= producto.total %></td>
+                  <td style="text-align: center;"><div class="btn btn-danger eliminar"><i class="fa-solid fa-trash"></i></div></td>
+                </tr>                                                  
+                <% }) %>
+        </tbody>
+    </table>
+    
+     <!-- Modal Pago -->
+
+     <div class="modal fade modal-lg" id="modalPago" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">    
+                    <h5 class="modal-title">Detalles del Pago</h5>    
+                    <div class="btn-close" data-bs-dismiss="modal"></div>    
+                </div>
+                <div class="modal-body" style="overflow-x: auto; white-space: nowrap;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="total" class="form-label">Total</label>
+                            <input class="form-control" type="number" id="totalPago" value="<%= datos.encabezado.total_venta %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="descuento" class="form-label">Descuento (%)</label>
+                            <input class="form-control" type="number" id="descuento" value="<%= datos.encabezado.total_descuento %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="deuda" class="form-label">Deuda</label>
+                            <input class="form-control" type="number" id="deuda" value="<%= datos.encabezado.total_deuda %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="vuelto" class="form-label">Vuelto</label>
+                            <input class="form-control" type="number" id="vuelto" value="<%= datos.encabezado.total_vuelto %>">
+                        </div>
+                        </div>                        
+                        <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="debito" class="form-label">Débito</label>
+                            <input class="form-control" type="number" id="debito" value="<%= datos.encabezado.total_debito %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="credito" class="form-label">Crédito</label>
+                            <input class="form-control" type="number" id="credito" value="<%= datos.encabezado.total_credito %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="efectivo" class="form-label">Efectivo</label>
+                            <input class="form-control" type="number" id="efectivo" value="<%= datos.encabezado.total_efectivo %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="pgmovil" class="form-label">Pagomóvil</label>
+                            <input class="form-control" type="number" id="pgmovil" value="<%= datos.encabezado.total_pgmovil %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="biopago" class="form-label">Biopago</label>
+                            <input class="form-control" type="number" id="biopago" value="<%= datos.encabezado.total_biopago %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="divisas" class="form-label">Divisas</label>
+                            <input class="form-control" type="number" id="divisas" value="<%= datos.encabezado.total_divisa %>">
+                        </div>              
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn btn-danger" data-bs-dismiss="modal">Cancelar</div>
+                    <div class="btn btn-primary" id="pagarVenta">Cargar Pago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Modal Pago -->
+</form>
+
+    <!-- Modal Clientes -->
+    <div class="modal fade modal-lg" id="modalClientes" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">    
+                    <h5 class="modal-title">Listado de Clientes</h5>    
+                    <div class="btn-close" data-bs-dismiss="modal"></div>    
+                </div>
+                <div class="modal-body" style="overflow-x: auto; white-space: nowrap;">
+                    <table class="col-sm-12 table table-hover table-bordered mb-2" id="tabla_clientes">
+                        <thead>
+                          <tr>
+                            <td class="texto">Codigo</td>
+                            <td class="texto">Cédula</td>
+                            <td class="texto">Nombre</td>
+                            <td class="texto">Dirección</td>
+                            <td class="texto">Teléfono</td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% clientes.forEach(cliente => { %>
+                          <tr>
+                            <td><%= cliente.codigo %></td>
+                            <td><%= cliente.cedula %></td>
+                            <td><%= cliente.nombre %></td>
+                            <td><%= cliente.direccion %></td>
+                            <td><%= cliente.telefono %></td>
+                          </tr>                                               
+                          <% }) %>
+                        </tbody>
+                      </table>    
+                </div>
+                <div class="modal-footer">
+                    <div class="btn btn-danger" data-bs-dismiss="modal">Cancelar</div>
+                    <div class="btn btn-primary">Guardar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Modal Proveedores-->
+
+    <!-- Inicio Modal Productos -->
+    <div class="modal fade modal-lg" id="modalProductos" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">                                            
+                <div class="modal-header">
+                    <h5 class="modal-title">Este es el titulo</h5>
+                    <div class="btn-close" data-bs-dismiss="modal"></div>
+                </div>
+                <div class="modal-body" style="overflow-x: auto; white-space: nowrap;">
+                    <table class=" col-sm-12 table table-hover table-bordered mb-2" id="tabla_productos">                    
+                        <thead>                                            
+                            <tr >
+                                <td class="texto">Imágen</td> 
+                                <td class="texto">Código</td>                                            
+                                <td class="texto">Nombre</td>
+                                <td class="texto">Marca</td>
+                                <td class="texto">Modelo</td>
+                                <!-- <td class="texto">Uso</td> COLOCARLO COMO TOOLTIP-->
+                                <td class="texto">Precio de Compra</td>                                            
+                            </tr>                                            
+                        </thead>                                                        
+                        <tbody>
+                            <% productos.forEach(producto => { %>
+                            <tr id="<%= producto.codigo %>" class="">
+                                <td class="text-center"><img src="/img/productos/<%= producto.codigo %>.png" width="50px" height="50px"></td>
+                                <td class="text-center"><%= producto.codigo %></td>                                
+                                <td class="text-center nombre"><%= producto.nombre %></td>
+                                <td class="text-center"><%= producto.marca %></td>
+                                <td class="text-center"><%= producto.modelo %></td>
+                                <td class="text-center"><%= producto.precio_venta %></td>
+                            </tr>                                    
+                            <% }) %>
+                        </tbody>                                                     
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn btn-danger" data-bs-dismiss="modal">Cancelar</div>
+                    <div class="btn btn-primary">Guardar</div>
+                </div>
+            </div>
+        </div>
+      
+    </div>
+    <div id="contenedor-mensajes"></div>
+    <!-- Fin Modal Productos-->
+    <script src="/js/general.js"></script>
+    <script>
+
+        $(document).ready(function(){
+
+            let sumatoria = parseFloat($("#total_venta").val());
+            let sumatoriaN = 0;
+            let sumatoriaN3 = 0;
+    
+
+            $("#agregar").on('click', function (e) {
+
+                if (!procesarFormulario("nventa")) return false; 
+                sumatoria = parseFloat($("#total_venta").val());
+                sumatoriaN = 0;
+                e.preventDefault();                           
+                const producto = $("#producto").val();
+                const precio = $("#precio").val()
+                const cantidad = $("#cantidad").val()
+                /* console.log(producto, precio, cantidad) */
+                const total = precio * cantidad
+                const codigo_producto = $('#codigo_producto').val();
+                    let i = 0;
+
+                    $(".filaI").each(function() {
+                        if($(this).find("td:eq(1)").text() == codigo_producto){
+                            i++
+                        }
+                    });
+                    
+                    if(i > 0){
+                        let cantidadTD = parseFloat($(`#${codigo_producto} > .cantidad`).text()) + parseFloat(cantidad)
+                        $(`#${codigo_producto} > .cantidad`).text(cantidadTD)
+                        $(`#${codigo_producto} > .total`).text(cantidadTD * precio)
+                    }else{                        
+                            const div = `<tr id = "${codigo_producto}" class = "filaI">
+                            <td class="imagen"><img src="/img/productos/${codigo_producto}.png" width="50px" height="50px"></td>    
+                            <td class="codigo">${codigo_producto}</td>
+                            <td class="producto">${producto}</td>
+                            <td class="precio">${precio}</td>
+                            <td class="cantidad">${cantidad}</td>
+                            <td class="total">${total}</td>
+                            <td style="text-align: center;"><div class="btn btn-danger eliminar"><i class="fa-solid fa-trash"></i></div></td></tr>`
+                            $("#tabla > tbody").append(div)
+                    }
+                        $('#producto').val('')
+                        $('#precio').val('')
+                        $('#cantidad').val('')
+                        $('#total_producto').val('')                
+
+                 // Calcular la sumatoria de la columna "total"                              
+                
+                $(".filaI").each(function() {
+                    sumatoria = parseFloat($("#total_venta").val());                                                         
+                    
+                     sumatoriaN += parseFloat($(this).find("td:eq(5)").text());
+
+                     
+                     sumatoria = sumatoriaN-sumatoria;
+
+                    
+                     
+                });
+
+                $("#total_venta").val(sumatoriaN)                         
+                $("#totalPago").val(sumatoriaN);
+                $('#deuda').val(parseFloat($("#deuda").val())+sumatoria);
+                
+            })
+
+            $("tbody").on('click', '.eliminar', function (e) {
+                let sumatoriaN2 = sumatoriaN;                             
+                const id = $(this).parents(".filaI").attr("id")
+
+                const valorColumna5 = parseFloat($(`#${id}`).find('td').eq(5).text());
+                $(`#${id}`).remove()
+                sumatoriaN2 -= valorColumna5;
+                sumatoriaN = sumatoriaN2
+                
+
+                $("#total_venta").val(sumatoriaN2);
+                $("#totalPago").val(sumatoriaN2);
+                $("#deuda").val(parseFloat($("#deuda").val()-valorColumna5));
+                //$("#tabla > tbody").append(div)
+
+            })
+            
+            
+
+            $("#cliente").autocomplete({
+                source: function(request, response){
+
+                    $.ajax({
+                        url: "/ventas/autoCompleteClientesA",
+                        type: "GET",
+                        data:{
+                            term: request.term// El termino representa la busqueda - Get. 
+                        },
+                        success: function(data) { 
+                            response(data.map(item => ({
+                                    label: `${item.nombre}`,
+                                    value: item.nombre, 
+                                    codigo: item.codigo
+                                })));
+                        },
+                        error: function() {
+                            console.error('Error fetching autocomplete data');
+                        }
+                    });
+                },
+
+                minLength: 2, // Mínimo número de caracteres antes de lanzar la solicitud                
+                select: function (event, ui) {
+                    event.preventDefault();               
+                    $('#codigo_cliente').val(ui.item.codigo);                
+                    $(this).val(ui.item.value)
+
+                }
+            });
+
+            $("#producto").autocomplete({
+                source: function(request, response){
+
+                    $.ajax({
+                        url: "/ventas/autoCompleteProductosA",
+                        type: "GET",
+                        data:{
+                            term: request.term// El termino representa la busqueda - Get. 
+                        },
+                        success: function(data) { 
+                            response(data.map(item => ({
+                                    label: `${item.nombre}`,
+                                    value: item.nombre, 
+                                    codigo: item.codigo,
+                                    precio_venta: item.precio_venta,
+                                })));
+                        },
+                        error: function() {
+                            console.error('Error fetching autocomplete data');
+                        }
+                    });
+                },
+
+                minLength: 2, // Mínimo número de caracteres antes de lanzar la solicitud
+                select: function (event, ui) {
+                    event.preventDefault();               
+                    $('#codigo_producto').val(ui.item.codigo);                
+                    $(this).val(ui.item.value)
+
+                    $('#precio').val(ui.item.precio_venta)
+                }
+            });
+
+            $("#cantidad").on('change',function(){
+                let cantidad = $(this).val()
+                let totalref = cantidad * $(precio).val()
+                $('#total_producto').val(totalref)
+            })
+
+            $(document).keypress(function(event) {
+                if (event.which === 13) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
+            $('#tabla_clientes tbody').off('click', 'tr').on('click', 'tr', function() {
+                $('#codigo_cliente').val($(this).find('td:eq(0)').text());
+                    $('#cliente').val($(this).find('td:eq(2)').text());
+                    $('#modalClientes').hide();
+                    $('.modal-backdrop').remove();
+            });
+
+            $('#tabla_productos tbody').off('click', 'tr').on('click', 'tr', function() {
+                    $('#codigo_producto').val($(this).find('td:eq(1)').text());                    
+                    $('#producto').val($(this).find('td:eq(2)').text());
+                    $('#precio').val($(this).find('td:eq(5)').text());
+                    $('#modalProductos').hide();
+                    $('.modal-backdrop').remove();               
+            });
+
+            $('#descuento').on('change', function(){
+                let descuento = ($('#totalPago').val() * $(this).val())/100;
+                $('#deuda').val($('#deuda').val() - descuento)
+
+                if($("#descuento").val() == '0' || $("#descuento").val() == ''){
+                    $("#deuda").val($("#totalPago").val())
+                }
+
+                if(parseFloat($("#vuelto").val()) > 0){
+                    $("#deuda").val(0)
+                }
+            })
+
+
+            
+            let valoresPrevios = {
+                debito: $("#debito").val(),
+                credito: $("#credito").val(),
+                efectivo: $("#efectivo").val(),
+                divisas: $("#divisas").val(),
+                pgmovil: $("#pgmovil").val(),
+                biopago: $("#biopago").val()
+            };
+
+            let valoresNuevos = {
+                debito,
+                credito,
+                efectivo,
+                divisas,
+                pgmovil,
+                biopago
+            };
+            
+            
+            
+            // Itera sobre las propiedades del objeto y suma sus valores
+            for (let key in valoresPrevios){
+                if (valoresPrevios.hasOwnProperty(key)) {
+                    // Convierte cada valor a número y súmalo a sumatoria
+                    sumatoriaN3 += parseFloat(valoresPrevios[key]) || 0; // Usa parseFloat para convertir a número y || 0 para manejar valores no numéricos
+               
+            }
+            }
+              
+            ///Futuro        
+
+            function actualizarDeuda(valor, nombreCampo) {               
+                
+                let deuda = parseFloat($("#deuda").val());
+                if(valor < valoresPrevios[nombreCampo]){
+                    deuda += (valoresPrevios[nombreCampo]-valor)
+                }
+                if(valor > valoresPrevios[nombreCampo]){
+                    deuda -= (valor-valoresPrevios[nombreCampo])
+                }
+
+                $("#deuda").val(deuda.toFixed(2));
+
+            }
+
+            function actualizarVuelto() {
+                let totalPago = parseFloat($("#totalPago").val()) || 0;
+                let deuda = parseFloat($("#deuda").val()) || 0;
+                if (sumatoriaN3 > totalPago) {
+                    $("#vuelto").val((sumatoriaN3 - totalPago).toFixed(2));
+                    $("#deuda").val(0);
+                } else {
+                    $("#vuelto").val(0);
+                }
+                
+            }
+
+            function agregarValor(campo, nombreCampo, dividirPorValorDivisa = false) {
+                let valor = parseFloat($(campo).val()) || 0;
+                if (dividirPorValorDivisa) {
+                    let valorDivisa = parseFloat($("#valorDivisa").val()) || 1;
+                    valor = valor / valorDivisa;
+                }
+
+                
+                if(valor < valoresPrevios[nombreCampo]){
+                    sumatoriaN3 -= (valoresPrevios[nombreCampo]-valor)
+                }
+                if(valor > valoresPrevios[nombreCampo]){
+                    sumatoriaN3 += (valor-valoresPrevios[nombreCampo])
+                }
+
+            
+ 
+                actualizarDeuda(valor, nombreCampo);
+                actualizarVuelto();
+                valoresPrevios[nombreCampo] = valor; // Actualizar el valor previo              
+            }
+
+            $("#debito").on("change", function() {
+                agregarValor(this, "debito", true);
+            });
+            $("#credito").on("change", function() {
+                agregarValor(this, "credito", true);
+            });
+            $("#efectivo").on("change", function() {
+                agregarValor(this, "efectivo", true);
+            });
+            $("#divisas").on("change", function() {
+                agregarValor(this, "divisas");
+            });
+            $("#pgmovil").on("change", function() {
+                agregarValor(this, "pgmovil", true);
+            });
+            $("#biopago").on("change", function() {
+                agregarValor(this, "biopago", true);
+            });
+
+            $('#realizarPago').click(function(e){
+                    
+                    e.preventDefault();                    
+                    let nFilas = $("#tabla tr").length;
+                    if (nFilas  < 2){
+                        mostrarMensaje('error','El ingreso de productos es obligatorio')
+                        return false
+                    }
+                    $('#modalPago').modal('show');
+                    
+                })
+
+                $('#pagarVenta').click(function(e) {
+                    e.preventDefault();
+                    if($("#deuda").val() > 0){                       
+                        mostrarMensaje('error','Debe cancelar la deuda a totalidad')
+                        return false;
+                    }
+                    
+        
+                    const codigo_cliente = parseFloat($('#codigo_cliente').val());
+                    const fechaVenta = $('#fechaVenta').val();
+                    const totalVenta = parseFloat($("#total_venta").val());
+                    const valorDivisa = parseFloat($("#valorDivisa").val());
+                    const totalDebito = parseFloat($("#debito").val());
+                    const totalCredito = parseFloat($("#credito").val());
+                    const totalEfectivo = parseFloat($("#efectivo").val());
+                    const totalDivisas = parseFloat($("#divisas").val());
+                    const totalPgmovil = parseFloat($("#pgmovil").val());
+                    const totalBiopago = parseFloat($("#biopago").val());
+                    const totalDeuda = parseFloat($("#deuda").val());
+                    const totalDescuento = parseFloat($("#descuento").val());
+                    const totalVuelto =  parseFloat($("#vuelto").val());
+
+                    var productos = [];
+                    $('#tabla tbody tr').each(function() {
+                    var codigo_producto = $(this).find('td').eq(1).text();
+                    var precio_venta = $(this).find('td').eq(3).text();
+                    var cantidad = $(this).find('td').eq(4).text();
+                    var total = $(this).find('td').eq(5).text();
+
+                    productos.push({
+                        codigo_producto: codigo_producto,
+                        precio_venta: parseFloat(precio_venta),
+                        cantidad: parseInt(cantidad),
+                        total: parseFloat(total)
+                    });
+                    });
+
+                    let venta = {
+                    codigo: $("#numeroventa").val(),
+                    codigo_cliente: codigo_cliente,
+                    totalVenta: totalVenta,
+                    totalDebito: totalDebito,
+                    totalCredito: totalCredito,
+                    totalEfectivo: totalEfectivo,
+                    totalDivisas: totalDivisas,
+                    totalBiopago: totalBiopago,
+                    totalPgmovil: totalPgmovil,
+                    valorDivisa: valorDivisa,
+                    fechaVenta: fechaVenta,
+                    productos: productos,
+                    totalDeuda: totalDeuda,
+                    totalDescuento: totalDescuento,
+                    totalVuelto: totalVuelto,
+                    };
+
+                    var ventaJson = JSON.stringify(venta);
+
+                    $.ajax({
+                        url: `/ventas/modificar/${$("#numeroventa").val()}`,
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: ventaJson,
+                        success: function(response) {
+                            if (response.success) {
+                                localStorage.setItem('mensaje', response.message);
+                                window.location.href = '/ventas/lista';
+                            } else {
+                                mostrarMensaje('mensaje', response.message);
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido' + errorThrown;
+                            mostrarMensaje('error', errorMessage);
+                            console.log('Error:', textStatus, errorThrown);
+                        }
+                    });
+                });      
+
+        })        
+            
+    </script>
+
+<%- include('../footer') %>  

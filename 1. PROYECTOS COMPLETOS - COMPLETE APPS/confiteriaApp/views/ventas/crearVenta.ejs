@@ -1,0 +1,711 @@
+<%- include('../header') %>
+<form id="nventa" novalidate >
+    <input type="hidden" id="rol" value="<%= session.user.roles %>">
+    <div class="rounded row">
+        <h2 class="text-center">Nueva Venta</h2>  
+            <div>                
+                <div class="row mb-2 d-flex justify-content-end">
+                    <div class="col-sm-2 mr-0" style="width: 11%;">
+                        <div class=""><label for="numeroventa">N° Venta</label></div>    
+                        <div>
+                            <input readonly class="form-control" style="width: 100%; outline: none; box-shadow: none;" type="text" id="numeroventa" name="codigo" value="<%= codigo %>">
+                        </div>
+                    </div>  
+                    <div class="col-sm-2 mr-0" style="width: 10%;">
+                        <div class=""><label>Fecha</label></div>
+                        <div><input readonly class="form-control" style="width: 100%; outline: none; box-shadow: none;" id="fechaVenta" type="text" value="<%=fecha_creacion %>"></div>
+                    </div>
+                    <div class="col-sm-2" style="width: 9%;">
+                        <div class=""><label for="valorDivisa">Valor Divisa</label></div>    
+                        <div>
+                            <input readonly class="form-control" style="width: 100%; outline: none; box-shadow: none;" id="valorDivisa" name="valorDivisa" type="text" value="<%= valorDivisa %>">
+                        </div>
+                    </div>                   
+                </div>
+                <div class="d-flex justify-content-center"><h6>Datos del Cliente</h5></div> 
+                <input type="hidden" id="codigo_cliente" name="codigo_cliente">
+                <div class="row g-3">
+                    <div class="col-sm-2" style="width: 9%;">
+                        <label for="cedula">C.I</label>
+                        <input class="form-control"   type="text" id="cedula" name="cedula" required>  
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="nombre">Nombre y Apellido</label>
+                        <input class="form-control"   type="text" id="nombre" name="nombre" required>  
+                    </div>
+                    <div class="col-sm-2" style="width: 12%;">
+                        <label for="telefono">Teléfono</label>
+                        <input class="form-control"   type="text" id="telefono" name="telefono" required>  
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="direccion">Dirección</label>
+                        <input class="form-control" type="text" id="direccion" name="direccion" required>  
+                    </div>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-center mb-3"><h6>Información de la Venta</h5></div> 
+                <div class="row mb-2 mb-3">
+                    <div class="col-sm-4">
+                        <div class=""><label for="Producto">Producto</label></div>
+                        <input type="hidden" name="codigo_producto" id="codigo_producto"/>   
+                        <input type="hidden" id="pdetal"> 
+                        <input type="hidden" id="pmayor">
+                        <input type="hidden" id="cantidadMayor">  
+                        <input type="hidden" id="existencias">                          
+                        <div class="input-group">
+                            <textarea class="form-control" id="producto" name="Producto" rows="1" required></textarea>                                  
+                            <button id="listadoProductos" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProductos" ><i class="fa-solid fa-table-list"></i></button>
+                            <%if(session.user.roles == 1){%>    
+                            <a href="/productos/nuevo" target="_blank" id="añadir_producto" type="button" class="btn btn-primary"><i class="fa-solid fa-plus"></i></a>
+                            <%}%>                               
+                        </div>                                    
+                    </div>
+                    <div class="col-sm-1">
+                        <div><label for="Cantidad">Cantidad</label></div>
+                        <div class="input-group">
+                            <input class="form-control" type="text" name="Cantidad" id="cantidad" required>   
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class=""><label>Precio Unitario ($)</label></div>
+                        <input readonly class="form-control" type="text" id="precio">
+                    </div>
+                    <div class="col-sm-2">
+                        <div><label>Total Producto ($)</label></div>                        
+                        <input class="form-control" type="text" id="total_producto">
+                        <small style="color: #333333;">Bs.</small>
+                        <small style="color: #333333;" id="total_producto_bs"></small>
+                    </div>                     
+                </div>
+                <div class=" row mb-2 d-flex justify-content-end">                    
+                    <div class="col-sm-2">
+                        <div><label for="valordivisa">Total Venta ($)</label></div>
+                        <input readonly class="form-control" type="text" id="total_venta" name="total_venta">
+                        <small style="color: #333333;">Bs.</small>
+                        <small style="color: #333333;" id="total_venta_bs"></small>
+                    </div>                                               
+                </div>  
+                <div class="row mb-2 d-flex justify-content-between">
+                    <div class="col-sm-3">
+                      <div class="btn btn-primary" id="agregar">Añadir Producto</div>
+                    </div>
+                    <div class="col-sm-5 d-flex justify-content-end" style="gap: 10px;">
+                      <a href="/ventas/nuevo" class="btn btn-primary">Limpiar Venta</a>
+                      <div class="btn btn-secondary" id="realizarPago">Realizar Pago</div>
+                    </div>
+                </div>
+                <table class="col-sm-12 table table-hover table-bordered mb-2" id="tabla">
+                    <thead>
+                        <tr>
+                            <th class="texto">Código</th>
+                            <th class="texto">Imágen</th>                            
+                            <th class="texto">Producto</th>
+                            <th class="texto">Precio</th>
+                            <th class="texto">Cantidad</th>
+                            <th class="texto">Total</th>
+                            <th class="texto">Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+    </div>    
+    <!-- Modal Pago -->
+    <div class="modal fade modal-lg" id="modalPago" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">    
+                    <h5 class="modal-title">Detalles del Pago</h5>    
+                    <div class="btn-close" data-bs-dismiss="modal"></div>    
+                </div>
+                <div class="modal-body" style="overflow-x: auto; white-space: nowrap;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label for="total" class="form-label">Total</label>
+                                <input readonly class="form-control" type="text" id="totalPago">
+                                <small style="color: #333333;">Bs.</small>
+                                <small style="color: #333333;" id="total_bs"></small>
+                                <input type="hidden" name="total_venta_BS" id="total_venta_BS">
+                            </div>
+                            <div class="mb-3">
+                                <label for="descuento" class="form-label">Descuento (%)</label>
+                                <input class="form-control" type="text" id="descuento" name="descuento" placeholder="0.00">
+                                <input type="hidden" name="total_descuento" id="total_descuento" value="0">
+                                <input type="hidden" name="total_descuento_bs" id="total_descuento_bs" value="0">
+                            </div>
+                            <div class="mb-3">
+                                <label for="deuda" class="form-label">Deuda ($)</label>
+                                <input readonly class="form-control" type="text" id="deuda" value="0">
+                                <small style="color: #333333;">Bs.</small>
+                                <small style="color: #333333;" id="deuda_bs"></small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="vuelto" class="form-label">Vuelto ($)</label>
+                                <input readonly class="form-control" type="text" id="vuelto" name="vuelto" value="0">
+                                <small style="color: #333333;">Bs.</small>
+                                <small style="color: #333333;" id="vuelto_bs"></small>
+                            </div>
+                        </div>                        
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label for="debito" class="form-label">Débito BS</label>
+                                <input class="form-control" type="text" id="debito" name="debito" placeholder="0.00">
+                            </div>
+                            <div class="mb-3">
+                                <label for="efectivo" class="form-label" style="margin-top: 2%;">Efectivo BS</label>
+                                <input class="form-control" type="text" id="efectivo" name="efectivo" placeholder="0.00">
+                            </div>
+                            <div class="mb-3">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="pgmovil" class="form-label">Pagomóvil BS</label>
+                                        <input class="form-control" type="text" id="pgmovil" name="pgmovil" placeholder="0.00">
+                                    </div>
+                                    <div class="col-sm-3 comprobante" style="display: none;">
+                                        <label for="comprobante" class="form-label">Cód</label>
+                                        <input class="form-control" type="text" id="comprobante" name="comprobante">
+                                    </div>
+                                    <div class="col-sm-12 comprobante" style="display: none;">
+                                        <i class="fa-solid fa-circle-exclamation" style="color: #333333;"></i>
+                                        <small style="color: #333333;">Ingrese únicamente los últimos 4 dígitos</small>
+                                    </div>                                    
+                                </div>                                
+                            </div>
+                            <div class="mb-4">
+                                <label for="divisas" class="form-label">Divisas</label>
+                                <input class="form-control" type="text" id="divisas" name="divisas" placeholder="0.00">
+                            </div>              
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn btn-danger" data-bs-dismiss="modal">Cancelar</div>
+                    <button type="submit" class="btn btn-primary" id="pagarVenta" form="nventa">Cargar Pago</div>
+                </div>
+            </div>              
+        </div>        
+    </div>
+    <!-- Fin Modal Pago -->
+    <!-- Inicio Modal Productos -->
+    <div class="modal fade modal-xl" id="modalProductos" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">                                            
+                <div class="modal-header">
+                    <h5 class="modal-title">Productos</h5>
+                    <div class="btn-close" data-bs-dismiss="modal"></div>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="busqueda" class="form-control mb-2 w-25" placeholder="Buscar producto...">
+                    <div id="noCoincidencias" class="text-center" style="display: none;">No existen coincidencias</div>
+                    <table class=" col-sm-12 table table-hover table-bordered mb-2" id="tabla_productos">                    
+                        <thead>                                            
+                            <tr>
+                                <td class="texto">Código</td>  
+                                <td class="texto">Imágen</td>                                  
+                                <td class="texto">Nombre</td>
+                                <td class="texto">Precio de Venta ($)</td>  
+                                <td class="texto">Precio de Venta Mayor ($)</td>
+                                <td class="texto">Cantidad Mayor ($)</td>   
+                                <td class="texto">Existencias</td>                                       
+                            </tr>                                            
+                        </thead>                                                        
+                        <tbody>
+                            <% productos.forEach(producto => { %>
+                            <tr id="<%= producto.codigo %>" class="">
+                                <td class="text-center"><%= producto.codigo %></td>
+                                <td class="text-center"><img src="/img/productos/<%= producto.codigo %>.png" width="50px" height="50px"></td>                                                               
+                                <td class="text-center nombre"><%= producto.nombre%></td>
+                                <td class="text-center"><%= producto.precio_venta%></td>
+                                <td class="text-center"><%= producto.precio_mayor%></td>
+                                <td class="text-center"><%= producto.cantidad_mayor%></td>
+                                <td class="text-center"><%= producto.existencias%></td>
+                            </tr>                                    
+                            <% }) %>
+                        </tbody>                                                     
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn btn-danger" data-bs-dismiss="modal">Cancelar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Modal Productos-->
+</form>   
+<div id="contenedor-mensajes"></div>
+<script src="/js/general.js"></script>
+<script>
+    $(document).ready(function(){
+
+        if(localStorage.getItem('mensaje')){
+            mostrarMensaje('completado', localStorage.getItem('mensaje'))
+            localStorage.removeItem('mensaje')
+        }
+
+        const reporteUrl = localStorage.getItem('reporteUrl');    
+        const codigo = localStorage.getItem('codigo');    
+        if (reporteUrl) {
+            $.ajax({
+                url: reporteUrl,
+                type: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(response) {
+                    const blob = new Blob([response], { type: 'application/pdf' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `notaDeEntrega${codigo}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                    localStorage.removeItem('reporteUrl');
+                    localStorage.removeItem('codigo');
+                },
+                error: function() {
+                    console.error('Error al generar o descargar el PDF');
+                }
+            });
+        }
+
+        let sumatoria = 0;
+        let valorDivisa = $("#valorDivisa").val();
+        let sumatoriaDiv = 0;
+        let sumatoriaBs = 0;
+        let valoresPrevios = {debito: 0,credito: 0,efectivo: 0,divisas: 0,pgmovil: 0,biopago: 0};  
+        validarTextoSinNumeros('nombre');
+        validarCedulaTelefono('cedula')
+        validarCedulaTelefono('telefono')
+        $('#agregar').off('click');
+        $("tbody").on('click', '.eliminar', function (e) {
+            sumatoria = parseFloat($("#total_venta").val())
+            const id = $(this).parents(".fila").attr("id")
+            const valorColumna5 = parseFloat($(`#${id}`).find('td').eq(5).text());
+            sumatoria -= valorColumna5;
+            $(`#${id}`).remove()
+            $("#total_venta").val(sumatoria);
+            $("#total_venta_bs").text((valorDivisa * $("#total_venta").val()).toFixed(2));
+            $("#totalPago").val(sumatoria);
+            $('#deuda').val($("#totalPago").val());
+        })
+        function completaCamposCliente(cliente){
+            $('#codigo_cliente').val(cliente.codigo);
+            $('#cedula').val(cliente.cedula);                
+            $('#nombre').val(cliente.nombre);
+            $('#telefono').val(cliente.telefono);
+            $("#direccion").val(cliente.direccion);
+        }
+        $("#cedula").autocomplete({
+            source: function(request, response){
+                $.ajax({
+                    url: "/ventas/autoCompleteClientesA",
+                    type: "GET",
+                    data:{
+                        term: request.term// El termino representa la busqueda - Get. 
+                    },
+                    success: function(data) { 
+                        response(data.map(item => ({
+                                label: `${item.cedula}`,
+                                value: item.cedula, 
+                                codigo: item.codigo, 
+                                nombre: item.nombre,
+                                telefono: item.telefono,
+                                direccion: item.direccion
+                            })));
+                    },
+                    error: function() {
+                        console.error('Error fetching autocomplete data');
+                    }
+                });
+            },
+            minLength: 2, // Mínimo número de caracteres antes de lanzar la solicitud                
+            select: function (event, ui) {
+                completaCamposCliente(ui.item);               
+            }
+        });
+        $("#cedula").on('blur',function(){
+            let cedula = $(this).val()
+            if(cedula == ''){
+                $("#nombre").val('')
+                $("#telefono").val('')
+                $("#direccion").val('')
+            }else{
+                $.ajax({
+                    url: "/ventas/autoCompleteClientesA",
+                    type: "GET",
+                    data:{
+                        cedula: cedula, 
+                    },
+                    success: function(data) { 
+                        completaCamposCliente(data);
+                    },
+                    error: function() {
+                        $("#nombre").val('')
+                        $("#telefono").val('')
+                        console.error('Error fetching autocomplete data');
+                    }
+                });
+            }            
+        })
+        $("#cedula").on('change', function(){
+            if($(this).val() === ''){
+                $("#codigo_cliente").val('')
+            }            
+        })
+        $("#producto").autocomplete({
+            source: function(request, response){
+                $.ajax({
+                    url: "/ventas/autoCompleteProductosA",
+                    type: "GET",
+                    data:{
+                        term: request.term// El termino representa la busqueda - Get. 
+                    },
+                    success: function(data) { 
+                        response(data.map(item => ({
+                                label: `${item.nombre}`,
+                                value: item.nombre, 
+                                codigo: item.codigo,
+                                precio_venta: item.precio_venta,
+                                precio_mayor: item.precio_mayor,
+                                cantidad_mayor : item.cantidad_mayor,
+                                existencias: item.existencias
+                        })));
+                    },
+                    error: function() {
+                        console.error('Error fetching autocomplete data');
+                    }
+                });
+            },
+            minLength: 2, // Mínimo número de caracteres antes de lanzar la solicitud
+            select: function (event, ui) {
+                $(this).val(ui.item.value)             
+                $('#codigo_producto').val(ui.item.codigo);             
+                $('#pdetal').val(ui.item.precio_venta);
+                $('#pmayor').val(ui.item.precio_mayor);
+                $('#cantidadMayor').val(ui.item.cantidad_mayor);
+                $('#existencias').val(ui.item.existencias);                
+            }
+        });
+        $("#cantidad").on('change',function(){
+            let precio
+            if($(this).val() > $('#existencias').val()){
+                mostrarMensaje('error','La cantidad supera las existencias')
+                return false;
+            }else{
+                $("#agregar").on('click', function (e) {               
+                    sumatoria = 0;                
+                    e.preventDefault(); 
+                    if (!procesarFormulario("nventa")) return false;           
+                    const producto = $("#producto").val();
+                    const precio = $("#precio").val()
+                    const cantidad = $("#cantidad").val()
+                    const total = precio * cantidad              
+                    const codigo_producto = $('#codigo_producto').val();
+                    let i = 0;
+                    $(".fila").each(function() {
+                        if($(this).find("td:eq(0)").text() == codigo_producto){
+                            i++
+                        }
+                    });                
+                    if(i > 0){
+                        let cantidadTD = parseFloat($(`#${codigo_producto} > .cantidad`).text()) + parseFloat(cantidad)
+                        $(`#${codigo_producto} > .cantidad`).text(cantidadTD)
+                        $(`#${codigo_producto} > .total`).text(cantidadTD * precio)
+                    }else{                        
+                        const div = `<tr id = "${codigo_producto}" class = "fila">
+                        <td class="codigo">${codigo_producto}</td>
+                        <td class="imagen"><img src="/img/productos/${codigo_producto}.png" width="50px" height="50px"></td>
+                        <td class="producto">${producto}</td>
+                        <td class="precio">${precio}</td>
+                        <td class="cantidad">${cantidad}</td>
+                        <td class="total">${total.toFixed(2)}</td>
+                        <td style="text-align: center;"><div class="btn btn-danger eliminar"><i class="fa-solid fa-trash"></i></div></td></tr>`
+                        $("#tabla > tbody").append(div)
+                    }
+                    $('#producto').val('')
+                    $('#precio').val('')
+                    $('#cantidad').val('')
+                    $('#total_producto').val('')
+                    $("#total_producto_bs").text('')  
+                    // Calcular la sumatoria de la columna "total"            
+                    $(".fila").each(function() {
+                        sumatoria += parseFloat($(this).find("td:eq(5)").text());
+                    });
+                    // Mostrar el resultado en un input
+                    $("#total_venta").val(sumatoria.toFixed(2));
+                    let totalVenta = $("#total_venta").val()
+                    $("#total_venta_bs").text((valorDivisa * totalVenta).toFixed(2));
+                    $("#totalPago").val($("#total_venta").val());
+                    $('#deuda').val($("#totalPago").val());                
+                })
+            }            
+            if ($(this).val() < 0) {
+                $(this).val("");
+            }
+            if($(this).val() >= $('#cantidadMayor').val()){
+                $('#precio').val($("#pmayor").val())
+                precio = $("#precio").val()
+            }else{
+                $('#precio').val($("#pdetal").val())
+                precio = $("#precio").val()
+            }
+            let totalref = ($(this).val() * precio).toFixed(2)
+            $('#total_producto').val(totalref)
+            $('#total_producto_bs').text((totalref * valorDivisa).toFixed(2));
+        })
+        $("#cantidad").on("input", function() {
+            if ($(this).val() < 0) {
+                $(this).val("");
+            }            
+        });
+        $("#total_producto").on('change', function() {
+            if($(this).val() >= $("#pmayor").val()*$("#cantidadMayor").val()){
+                $("#precio").val($("#pmayor").val())
+                $("#cantidad").val(($(this).val()/$("#pmayor").val()).toFixed(3));
+                $("#total_producto_bs").text((parseFloat($(this).val()) * valorDivisa).toFixed(2));
+            }else{
+                $("#precio").val($("#pdetal").val())
+                $("#cantidad").val(($(this).val()/$("#pdetal").val()).toFixed(3));
+                $("#total_producto_bs").text((parseFloat($(this).val()) * valorDivisa).toFixed(2));
+            }
+        })
+        $(document).keypress(function(event) {
+            if (event.which === 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+        $('#tabla_clientes tbody').off('click', 'tr').on('click', 'tr', function() {
+            $('#codigo_cliente').val($(this).find('td:eq(0)').text());
+                $('#cliente').val($(this).find('td:eq(2)').text());
+                $('#modalClientes').hide();
+                $('.modal-backdrop').remove();
+        });
+        $('#tabla_productos tbody').off('click', 'tr').on('click', 'tr', function() {
+            $('#codigo_producto').val($(this).find('td:eq(0)').text());
+            $('#producto').val($(this).find('td:eq(2)').text());
+            $('#pdetal').val($(this).find('td:eq(3)').text());
+            $('#pmayor').val($(this).find('td:eq(4)').text());
+            $('#cantidadMayor').val($(this).find('td:eq(5)').text());
+            $('#existencias').val($(this).find('td:eq(6)').text());
+            $('#modalProductos').hide();
+            $('.modal-backdrop').remove();
+        });
+        $('#descuento').on('change', function(){
+            window.descuento = ($('#totalPago').val() * $(this).val())/100;
+            $("#total_descuento").val(($("#totalPago").val()-window.descuento).toFixed(2));
+            $("#total_descuento_bs").val((parseFloat($("#total_descuento").val()) * valorDivisa).toFixed(2));
+            if($("#descuento").val() != 0 && sumatoriaBs == 0 && sumatoriaDiv == 0){               
+                $("#deuda").val(($("#totalPago").val() - window.descuento).toFixed(2))
+                $("#deuda_bs").text((parseFloat($("#deuda").val()) * valorDivisa).toFixed(2));           
+            }else if(($("#descuento").val() == 0 || $("#descuento").val() == '') && sumatoriaBs == 0 && sumatoriaDiv == 0){
+                $("#deuda").val($("#totalPago").val())
+                $("#deuda_bs").text((parseFloat($("#deuda").val()) * valorDivisa).toFixed(2));
+            }else if ((sumatoriaBs != 0 || sumatoriaDiv != 0 && $("#descuento").val() != 0)||(sumatoriaBs != 0 && sumatoriaDiv != 0 && $("#descuento").val() != 0)){
+                $("#deuda").val(($("#totalPago").val()-window.descuento-sumatoriaDiv-(sumatoriaBs/valorDivisa)).toFixed(2))
+                $("#deuda_bs").text(($("#deuda").val()*valorDivisa).toFixed(2))
+            }            
+        })       
+        function actualizarDeuda(valor, nombreCampo){
+            if (sumatoriaBs != 0) {
+                if($("#descuento").val() == '0' || $("#descuento").val() == ''){
+                    $("#deuda_bs").text((parseFloat($("#total_bs").text()) - sumatoriaBs - (sumatoriaDiv * valorDivisa)).toFixed(2));
+                    $('#deuda').val((parseFloat($("#deuda_bs").text()) / valorDivisa).toFixed(2));
+                }else{
+                    $("#deuda_bs").text((parseFloat($("#total_descuento_bs").val()) - sumatoriaBs - (sumatoriaDiv * valorDivisa)).toFixed(2));
+                    $('#deuda').val((parseFloat($("#deuda_bs").text()) / valorDivisa).toFixed(2));
+                }                
+            } else if (sumatoriaDiv != 0) {
+                if($("#descuento").val() == '0' || $("#descuento").val() == ''){
+                    $("#deuda").val((parseFloat($("#totalPago").val()) - sumatoriaDiv - (sumatoriaBs / valorDivisa)).toFixed(2));
+                    $("#deuda_bs").text((parseFloat($("#deuda").val()) * valorDivisa).toFixed(2));
+                }else{
+                    $("#deuda").val((parseFloat($("#total_descuento").val()) - sumatoriaDiv - (sumatoriaBs / valorDivisa)).toFixed(2));
+                    $("#deuda_bs").text((parseFloat($("#deuda").val()) * valorDivisa).toFixed(2));
+                }                
+            }else if (sumatoriaDiv == 0 && sumatoriaBs == 0) {
+                if (window.descuento > 0) {
+                    $("#deuda").val($("#totalPago").val() - window.descuento);
+                    $("#deuda_bs").text((parseFloat($("#deuda").val()) * valorDivisa).toFixed(2));
+                } else {
+                    $("#deuda").val($("#totalPago").val());
+                    $("#deuda_bs").text((parseFloat($("#deuda").val()) * valorDivisa).toFixed(2)); 
+                }
+            }           
+        }
+        function actualizarVuelto() {
+            let totalPago = parseFloat($("#totalPago").val())
+            let deuda = parseFloat($("#deuda").val())
+            let descuento = $("#descuento").val()
+            let totalDescuento = $("#total_descuento").val()   
+            let sumatoria = sumatoriaDiv + (sumatoriaBs/valorDivisa)
+            if(descuento > 0){                
+                if(sumatoria > totalDescuento){
+                    $("#vuelto").val((sumatoria - totalDescuento).toFixed(2));
+                    $("#vuelto_bs").text(($("#vuelto").val() * valorDivisa).toFixed(2));
+                    $("#deuda").val(0.00);
+                    $("#deuda_bs").text(0.00) 
+                }else{
+                    $("#vuelto").val(0.00);
+                    $("#vuelto_bs").text(0.00);
+                }
+            }else{
+                if (deuda > 0){
+                    $("#vuelto").val(0.00);
+                    $("#vuelto_bs").text(0.00);
+                    $("#deuda").val((totalPago-sumatoria).toFixed(2));
+                    $("#deuda_bs").text((parseFloat($("#deuda").val())*valorDivisa).toFixed(2))
+                }else{
+                    $("#deuda").val(0.00);
+                    $("#deuda_bs").text(0.00)
+                    $("#vuelto").val((sumatoria-totalPago).toFixed(2));
+                    $("#vuelto_bs").text(($("#vuelto").val()*valorDivisa).toFixed(2))
+                }               
+            }            
+        }
+        function agregarValor(campo, nombreCampo, bolivares = false) {
+            let valor = parseFloat($(campo).val()) || 0;            
+            if (bolivares) {             
+                if(valor < valoresPrevios[nombreCampo]){
+                    sumatoriaBs -= (valoresPrevios[nombreCampo]-valor)
+                    valoresPrevios[nombreCampo] = valor; // Actualizar el valor previo
+                }
+                if(valor > valoresPrevios[nombreCampo]){
+                    sumatoriaBs += (valor-valoresPrevios[nombreCampo])
+                    valoresPrevios[nombreCampo] = valor;
+                }
+            }else{
+                if(valor < valoresPrevios[nombreCampo]){
+                    sumatoriaDiv -= (valoresPrevios[nombreCampo]-valor)
+                    valoresPrevios[nombreCampo] = valor;
+                }
+                if(valor > valoresPrevios[nombreCampo]){
+                    sumatoriaDiv += (valor-valoresPrevios[nombreCampo])
+                    valoresPrevios[nombreCampo] = valor;
+                }
+            }        
+            
+            actualizarDeuda(valor,nombreCampo);
+            actualizarVuelto();            
+        }
+        $("#debito").on("change", function() {
+            agregarValor(this, "debito", true);
+        });
+        /* $("#credito").on("change", function() {
+            agregarValor(this, "credito", true);
+        }); */
+        $("#efectivo").on("change", function() {
+            agregarValor(this, "efectivo", true);
+        });
+        $("#divisas").on("change", function() {
+            agregarValor(this, "divisas");
+        });
+        $("#pgmovil").on("change", function() {
+            if($(this).val()!=0){
+                $(".comprobante").show()
+            }else{
+                $(".comprobante").hide() 
+            }
+            agregarValor(this, "pgmovil", true);
+        });
+        /* $("#biopago").on("change", function() {
+            agregarValor(this, "biopago", true);
+        }); */
+        $('#realizarPago').click(function(e){
+            e.preventDefault();                  
+            let nFilas = $("#tabla tr").length;
+            if (nFilas  < 2){
+                mostrarMensaje('error','El ingreso de productos es obligatorio')
+                return false
+            }
+            $("#total_bs").text((valorDivisa * $("#total_venta").val()).toFixed(2));
+            $("#total_venta_BS").val((valorDivisa * $("#total_venta").val()).toFixed(2));
+            $("#deuda_bs").text($("#total_bs").text());
+            $('#modalPago').modal('show');    
+
+        })
+        $("#nventa").on("submit", function(e) {
+            e.preventDefault();
+            if($("#deuda").val() > 0){                       
+                mostrarMensaje('error','Debe cancelar la deuda a totalidad')
+                return false;
+            }
+            if($("#pgmovil").val() > 0){
+                if($("#comprobante").val() == 0){
+                    mostrarMensaje('error','Debe ingresar un comprobante')
+                    return false;
+                }
+                if($("#comprobante").val().length < 4){
+                    mostrarMensaje('error','El comprobante debe tener al menos 4 caracteres')
+                    return false;
+                }
+            }   
+            let formData = new FormData(this);
+            var productos = [];
+            $('#tabla tbody tr').each(function() {
+                var codigo_producto = $(this).find('td').eq(0).text();
+                var precio_venta = $(this).find('td').eq(3).text();
+                var cantidad = $(this).find('td').eq(4).text();
+                var total = $(this).find('td').eq(5).text();
+                productos.push({
+                    codigo_producto: codigo_producto,
+                    precio_venta: parseFloat(precio_venta),
+                    cantidad: parseFloat(cantidad),
+                    total: parseFloat(total)
+                });
+            });
+            formData.append('productos', JSON.stringify(productos));            
+            $.ajax({
+                url: '/ventas/guardar',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    localStorage.setItem('mensaje', 'Venta registrada exitosamente');
+                    window.open('/reportes/notaEntrega/' + $("#numeroventa").val(), '_blank');
+                  /*localStorage.setItem('reporteUrl', `/reportes/notaEntrega/${$("#numeroventa").val()}`);
+                    localStorage.setItem('codigo', $("#numeroventa").val());   */                
+                    if ($("#rol").val() == 1) {
+                        window.location.href = '/ventas/lista';
+                    } else {
+                        window.location.href = '/ventas/nuevo';
+                    }
+                   
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                    mostrarMensaje('error', errorMessage);
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        })
+        $('#busqueda').on('keyup', function() {
+            var filtro = $(this).val().toLowerCase();
+            var hayCoincidencias = false; // Bandera para verificar si hay coincidencias
+            // Iterar sobre cada fila de la tabla
+            $('#tabla_productos tbody tr').filter(function() {
+                var codigo = $(this).find('td:eq(1)').text().toLowerCase();
+                var nombre = $(this).find('td:eq(2)').text().toLowerCase();
+                var marca = $(this).find('td:eq(3)').text().toLowerCase();
+                var modelo = $(this).find('td:eq(4)').text().toLowerCase();                
+                // Verificar si el filtro está en alguna de las columnas
+                var coincide = codigo.includes(filtro) || nombre.includes(filtro) || marca.includes(filtro) || modelo.includes(filtro);
+                $(this).toggle(coincide);
+                if (coincide) {
+                    hayCoincidencias = true; // Si hay coincidencias, cambiar la bandera
+                }
+            });
+            // Mostrar u ocultar el mensaje de "No existen coincidencias"
+            if (hayCoincidencias) {
+                $('#noCoincidencias').hide();   // Ocultar mensaje
+                $('#tabla_productos').show();   // Mostrar la tabla
+            } else {
+                $('#noCoincidencias').show();   // Mostrar mensaje
+                $('#tabla_productos').hide();   // Ocultar la tabla
+            }
+        });            
+    })           
+</script>
+<%- include('../footer') %>  

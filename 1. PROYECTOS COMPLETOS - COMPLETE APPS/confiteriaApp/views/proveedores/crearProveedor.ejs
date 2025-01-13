@@ -1,0 +1,120 @@
+<%- include('../header') %>     
+<form action="/proveedores/guardar" method="post" id="registrarProveedor" novalidate>
+            <div class="row contenedor rounded mt-2">
+                <div class="text-center"><h2>Nuevo Proveedor</h2></div>
+                 
+                <div class="row p-0 mb-2">
+                    <div class="row-sm-2 mb-3"><a href="/proveedores/lista" class="btn btn-primary col-sm-1">Regresar</a></div>
+                    <div class="col-sm-4">
+                        <label for="rif">RIF</label> 
+                        <input type="text" id="rif" name="rif" class="form-control" required>
+                    </div>
+                    <div class="col-sm-8">
+                        <label for="razonsocial">Razon Social</label>
+                        <input type="text" id="razonsocial" name="razonsocial" class="form-control" required>
+                    </div>
+                </div>
+                <div class="row p-0 mb-2">
+                    <div class="col-sm-3">
+                        <label for="telefono">Teléfono</label>
+                        <input type="text" id="telefono" name="telefono" class="form-control" required>
+                    </div>
+                    <div class="col-sm-9">
+                        <label for="direccion">Dirección</label>
+                        <input type="text" id="direccion" name="direccion" class="form-control" required>
+                    </div>
+                </div>
+                <div class="row p-0 mb-2">
+                    <div class="col-sm-4">
+                        <label for="email">E-mail</label>
+                        <input type="text" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="web">Página Web</label>
+                        <input type="text" id="web" name="web" class="form-control" required>
+                    </div>
+                </div>
+                <div class="row p-0 mb-2">
+                    <div class="col-sm-4">
+                        <label for="banco">Banco</label>
+                        <select name="banco" id="banco" class="form-control" required>                           
+                            <% bancos.forEach(banco => { %>
+                                <option value="<%= banco.codigo %>"><%= banco.nombre %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="col-sm-6 mb-2">
+                        <label for="cuenta">N° de Cuenta</label>
+                        <input type="text" id="cuenta" name="cuenta" class="form-control" required>
+                    </div>
+
+                    <div class="col-sm-12 d-flex justify-content-end">                                
+                        <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar" id="registrarProveedor">
+                    </div>
+                </div>
+                
+</form>
+
+<div id="contenedor-mensajes"></div>        
+<script src="/js/general.js"></script>
+<script>
+    $(document).ready(function() {
+        
+        validarCedulaTelefono('telefono')
+        
+  
+        $('#registrarProveedor').submit(function(event){
+            event.preventDefault(); // Prevenir el envío tradicional del formulario
+            if (!procesarFormulario("registrarProveedor")) return false;
+
+            if($("#rif").val().length < 10){
+                mostrarMensaje('error', 'El RIF debe tener al menos 10 digitos')
+                return false
+            }else if($("#telefono").val().length < 11){
+                mostrarMensaje('error', 'Número telefónico no válido, introduzca nuevamente')
+                return false
+            }else if($("#cuenta").val().length < 20){
+                mostrarMensaje('error', 'Número de cuenta no válido, introduzca nuevamente')
+                return false
+            }
+            
+            var email = $('#email');
+                var website = $('#web');
+                var isValid = true;
+
+                if (email.val().trim() !== "" && !emailPattern.test(email.val())) {
+                    email.addClass('is-invalid');
+                    isValid = false;
+                }
+                if (website.val().trim() !== "" && !websitePattern.test(website.val())) {
+                    website.addClass('is-invalid');
+                    isValid = false;
+                }
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            
+            // Obtener los valores de los campos del formulario
+            var formData = new FormData(this);  
+            $.ajax({
+                url: '/proveedores/guardar',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    
+                    // Aquí puedes manejar la respuesta del servidor
+                    localStorage.setItem('mensaje', 'Proveedor registrado exitosamente');
+                    window.location.href = '/proveedores/lista';                      
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                    mostrarMensaje('error', errorMessage);
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        });
+    })
+  </script>
+<%- include('../footer') %>  

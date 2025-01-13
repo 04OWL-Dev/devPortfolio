@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Animated Login Form</title>
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">    
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/jquery-ui.min.css" />
+    <link rel="stylesheet" href="/css/mensajes.css" />
+    <link rel="stylesheet" href="/css/lineicons1.css">
+    <script src="/js/jquery-ui.min.js"></script> 
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/use.fontawesome.com_releases_v6.3.0_js_all.js"></script>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: 'poppins', sans-serif;
+        background: radial-gradient(circle,  #a8d5ba, #4e8f5e);
+        /* #3a1a7a */
+    }
+    .container{
+        width: 300px;
+        height: 500px;
+        padding: 20px;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    form .user-box{
+        position: relative;
+        margin-top: 10px;
+    }
+    form .user-box input{
+        width: 100%;
+        padding: 10px 0;
+        color: #555;
+        background: transparent;
+        font-size: 16px;
+        margin-bottom: 30px;
+        border: none;
+        outline: none;
+        border-bottom: 2px solid #ccc;
+    }
+    form .user-box input:focus{
+        border-bottom: 2px solid #83CF8F;
+    }
+    form .user-box label{
+        position: absolute;
+        top: 10px;
+        left: 0;
+        font-size: 16px;
+        color: #555;
+        pointer-events: none;
+        transition: all .5s ease;
+    }
+    form .user-box input:focus ~ label,
+    form .user-box input:valid ~ label{
+        top: -15px;
+        left: 0;
+        color: #83CF8F;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    form a{
+        font-size: 12px;
+        float: right;
+        margin-top: 20px;
+    }
+    span{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    span label{
+        padding: 5px 50px;
+        font-size: 18px;
+        background-color:  #83CF8F;
+        color: #fff;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+    }
+    span label:hover{
+        opacity: .9;
+    }
+    .social{
+        margin-top: 60px;
+        cursor: pointer;
+    }
+    .heading{
+        width: 100%;
+        color: indigo;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+    hr{
+        height: 3px;
+        background: indigo;
+        width: 30%;
+    }
+    .icons{
+        font-size: 26px;
+        justify-content: space-around;
+        align-items: center;
+        display: flex;
+        margin-top: 20px;
+        color: indigo;
+    }
+    .welcome{
+        position: absolute;
+        top: 100px;
+        width: 300px;
+        height: 500px;
+        padding: 10px;
+        display: none;
+        background-color: #fff;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    #chk{
+        display: none;
+    }
+    #chk:checked ~ .welcome{
+        display: block;
+    }
+    .welcome img{
+        width: 100px;
+        margin-left: calc(100%/3);
+        transform: translateY(70px);
+    }
+    .welcome h2{
+        color: indigo;
+        text-align: center;
+        margin-top: 80px;
+    }
+    .welcome a{
+        position: absolute;
+        top: 0px;
+        left: 20px;
+        color: indigo;
+        padding: 10px;
+    }
+</style>
+<script src="/js/jquery-3.7.1.min.js"></script>
+<body>
+    <div class="container">
+        <div class="logo text-center">
+            <img src="/img/action.png" width="auto" height="220px">
+        </div>
+        <form name="login" id="login">
+            <div class="user-box">
+                <input type="text" name="username" id="username" required>
+                <label for="username">Usuario</label>
+            </div>
+            <div class="user-box">
+                <input type="password" name="password" id="password" required>
+                <label for="password">Contraseña</label>
+            </div>
+            <span style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                <input type="button" id="chk" value="Ingresar">
+                <label for="chk">Ingresar</label>
+                <div class="forgot-password" style="margin-top: 10px;">
+                    <a href="#" id="forgot-password" style="color: black; text-decoration: none;" data-bs-toggle="modal" data-bs-target="#cambioContrasenaModal">¿Olvidó su contraseña?</a>
+                </div>
+            </span>
+            <!-- Modal -->
+            <div class="modal fade" id="cambioContrasenaModal" tabindex="-1" aria-labelledby="cambioContrasenaModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cambioContrasenaModalLabel">Recuperación de Contraseña</h5>
+                            <div class="btn-close" data-bs-dismiss="modal" aria-label="Close"></div>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="correo">Correo electrónico</label>
+                                    <input type="email" class="form-control" id="correo" name="correo" placeholder="Ingrese su correo electrónico">
+                                </div>
+                                
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" id="enviarCorreo">Enviar correo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
+        </form>
+    </div>
+    <div id="contenedor-mensajes"></div>
+    <script src="/js/general.js"></script>
+    <script>
+        $(function(){
+            $('#chk').on('click', function(e){
+                if (!procesarFormulario("login")) return false;
+                $.ajax({
+                        url: "/auth/validate",
+                        type: "POST",
+                        data:{
+                            user: $('#username').val(),
+                            password: $('#password').val(),
+                        },
+                        success: function() {                           
+                            $('.container').fadeOut(500, function() {
+                                window.location.href = '/auth/home';
+                            })                          
+                        },
+                        error: function(xhr) {
+                            if (xhr.status === 404) {
+                                mostrarMensaje("error", "Usuario no encontrado, revise las credenciales e intente nuevamente.");
+                            } else if (xhr.status === 500) {
+                                mostrarMensaje("error", "Error en el servidor. Por favor, intente más tarde.");
+                            }
+                        }
+                    });
+            })
+
+            $('#enviarCorreo').on('click', function(){
+                if(!validarCorreo($("#correo").val())){
+                    mostrarMensaje('error', 'Debe ingresar un correo válido.')
+                    return false;
+                }
+                $.ajax({
+                    url: "/auth/recuperarContrasena", 
+                    type: "POST", 
+                    data: {
+                        email: $("#correo").val()
+                    },
+                    success: function(){
+                        $("#cambioContrasenaModal").modal('hide');
+                        mostrarMensaje("completado", "Correo de recuperación enviado exitosamente");                        
+                    },
+                    error: function(xhr) {
+                        mostrarMensaje('error', `El correo ingresado no pertenece a algún usuario. Revise nuevamente.`)
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

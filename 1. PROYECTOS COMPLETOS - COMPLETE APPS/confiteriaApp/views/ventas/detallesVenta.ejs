@@ -1,0 +1,127 @@
+
+<div class="rounded row">
+    <h2 class="text-center mb-4"><%= datos.encabezado.codigo %></h2>  
+            <div>
+                <div class="row mb-2">                       
+                    <div class="col-sm-3">
+                        <div class=""><label for="cliente">Cliente</label></div>                                
+                        <div class="form-group">                                
+                            <div class="input-group">
+                                <input type="hidden" name="codigo_cliente" id="codigo_cliente" />
+                                <input readonly class="form-control"  type="search" id="cliente" name="cliente" value="<%= datos.encabezado.nombre %>" >
+                            </div> 
+                        </div>                   
+                    </div>
+                    <div style="max-width: 13%;">
+                        <div>
+                            <div class=""><label for="fechacompra">Fecha</label></div>
+                            <div><input readonly class="form-control" style="padding-right: 0px;"  type="date" id="fechacompra" name="fechacompra" value="<%= datos.encabezado.fechac %>"></div>
+                        </div>                        
+                    </div>                                
+                    <div style="max-width: 12%;">
+                        <div class=""><label for="totalVenta">Total($)</label></div>
+                        <div><input readonly class="form-control"  type="number" id="totalVenta" name="totalVenta" value="<%= datos.encabezado.total_venta %>"></div>
+                        <% if(datos.encabezado.descuento == 0){ %>
+                            <small style="color: #333333;">Bs.</small>
+                            <small style="color: #333333;"><%= datos.encabezado.total_venta_bs%></small>
+                        <% } %>    
+                    </div>
+                    <div style="max-width: 12%;">
+                        <div class=""><label for="valorDivisa">Valor Divisa</label></div>
+                        <div><input readonly class="form-control"  type="number" id="valorDivisa" name="valorDivisa" value="<%= datos.encabezado.precio_divisa %>"></div>
+                    </div>
+                    <% if(datos.encabezado.descuento > 0){%>
+                        <div style="max-width: 14%;">
+                            <div class=""><label for="descuento">Descuento(%)</label></div>
+                            <div><input readonly class="form-control"  type="number" id="descuento" name="descuento" value="<%= datos.encabezado.descuento%>"></div>
+                        </div>
+                        <div style="max-width: 12%;">
+                            <div class=""><label for="subtotal">Subtotal($)</label></div>
+                            <div><input readonly class="form-control"  type="number" id="subtotal" name="subtotal" value="<%= datos.encabezado.total_descuento%>"></div>
+                            <small style="color: #333333;">Bs.</small>
+                            <small style="color: #333333;"><%= datos.encabezado.total_descuento_bs%></small>
+                        </div>
+                    <%}%>               
+                </div>
+                <hr>
+                <p class="text-center">Detalles de Cancelación</p>
+                <hr>
+                <div class="row mb-2">
+                    <% if(datos.encabezado.total_debito > 0){ %>
+                        <div style="max-width: 12%;">
+                            <div class=""><label for="debito">Débito(Bs.)</label></div>
+                            <div><input readonly class="form-control"  type="number" id="debito" name="debito" value="<%= datos.encabezado.total_debito %>"></div>
+                        </div> 
+                    <%}%>
+                    <!-- <div class="col-sm-2">
+                        <div class=""><label for="debito">Credito</label></div>
+                        <div><input readonly class="form-control"  type="number" id="credito" name="credito" value="<%= datos.encabezado.total_credito %>"></div>
+                    </div> -->
+                    <% if(datos.encabezado.total_efectivo > 0){ %>
+                        <div style="max-width: 12%;">
+                            <div class=""><label for="debito">Efectivo(Bs.)</label></div>
+                            <div><input readonly class="form-control"  type="number" id="efectivo" name="efectivo" value="<%= datos.encabezado.total_efectivo %>"></div>
+                        </div>
+                    <%}%>
+                    <!-- <div class="col-sm-2 ">
+                        <div class=""><label for="debito">Biopago</label></div>
+                        <div><input readonly class="form-control"  type="number" id="biopago" name="biopago" value="<%= datos.encabezado.total_biopago %>"></div>
+                    </div>  -->
+                    <% if(datos.encabezado.total_pgmovil > 0){ %>
+                        <div style="max-width: 14%;">
+                            <div class=""><label for="debito">Pago Móvil(Bs.)</label></div>
+                            <div><input readonly class="form-control"  type="number" id="pgmovil" name="pgmovil" value="<%= datos.encabezado.total_pgmovil %>"></div>
+                            <small style="color: #333333;">Cód.</small>
+                            <small style="color: #333333;"><%= datos.encabezado.comprobante %></small>
+                        </div>                         
+                    <%}%>
+                    <% if(datos.encabezado.total_divisa > 0){ %>
+                        <div style="max-width: 12%;">
+                            <div class=""><label for="debito">Divisas($)</label></div>
+                            <div><input readonly class="form-control"  type="number" id="divisa" name="divisa" value="<%= datos.encabezado.total_divisa %>"></div>
+                            <small style="color: #333333;">Bs.</small>
+                            <small style="color: #333333;"><%=(datos.encabezado.total_divisa * datos.encabezado.precio_divisa).toFixed(2)%></small>
+                        </div>
+                    <%}%>
+                    <% if(datos.encabezado.total_vuelto > 0){ %>
+                        <div style="max-width: 12%;">
+                            <div class=""><label for="vuelto">Vuelto($)</label></div>
+                            <div><input readonly class="form-control"  type="number" id="vuelto" name="vuelto" value="<%= datos.encabezado.total_vuelto%>"></div>
+                            <small style="color: #333333;">Bs.</small>
+                            <small style="color: #333333;"><%=(datos.encabezado.total_vuelto*datos.encabezado.precio_divisa).toFixed(2)%></small>
+                        </div> 
+                    <%}%>                        
+                </div>               
+                
+ </div>      
+
+
+<table class="col-sm-12 table table-hover table-bordered mb-2" id="tabla">
+<thead>
+    <tr>
+        <th class="texto">Imágen</th>
+        <th class="texto">Código</th>
+        <th class="texto">Producto</th>
+        <th class="texto">Precio</th>
+        <th class="texto">Cantidad</th>
+        <th class="texto">Total</th>                
+    </tr>
+</thead>
+<tbody>
+    <% datos.detalle.forEach(producto => { %>
+        <tr>
+            <td class="imagen text-center"><img src="/img/productos/<%=producto.codigo_producto%>.png" width="50px" height="50px"></td>
+          <td><%= producto.codigo_producto %></td>
+          <td><%= producto.nombre_producto %></td>
+          <td><%= producto.precio %></td>
+          <td><%= producto.cantidad %></td>
+          <td><%= producto.total %></td>
+        </tr>                                                  
+        <% }) %>
+</tbody>
+</table>   
+
+</div>
+
+
+

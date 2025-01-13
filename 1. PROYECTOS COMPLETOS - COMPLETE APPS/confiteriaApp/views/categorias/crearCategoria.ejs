@@ -1,0 +1,60 @@
+<%- include('../header') %>
+    <form action="/categorias/guardar" method="post" id="registrarCategoria" novalidate>
+        
+        <div class="row rounded mt-2">
+            <h2 class="text-center">Nueva Categoría</h2>
+            <div class="row-sm-2 mb-3"><a href="/categorias/lista" class="btn btn-primary col-sm-1">Regresar</a></div> 
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label for="nombre">Nombre</label>
+                        <input class="form-control"  type="text" id="nombre" name="nombre" placeholder="Escribe el nombre de la categoría" required>
+                    </div>                
+                    <div class="col-sm-8">
+                        <label for="descripcion">Descripción de la Categoría</label>                       
+                            <div class="input-group">
+                                <textarea class="mb-1 rounded form-control" style="height: 38px; max-height: 100px;"  id="descripcion" name="descripcion" placeholder="Escribe la Descripción de la Categoría." required></textarea>
+                            </div>                  
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-end">                                
+                            <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar">
+                    </div>
+                </div>      
+        </div>
+    </form>
+    
+    <div id="contenedor-mensajes"></div>        
+    <script src="/js/general.js"></script>  
+<script>
+        $(document).ready(function() { 
+
+            $('#registrarCategoria').submit(function(event){
+                event.preventDefault(); // Prevenir el envío tradicional del formulario
+                if (!procesarFormulario("registrarCategoria")) return false;  
+                
+                // Obtener los valores de los campos del formulario
+                var formData = new FormData(this);
+            
+                $.ajax({
+                    url: '/categorias/guardar',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        // Aquí puedes manejar la respuesta del servidor
+                        localStorage.setItem('mensaje', 'Categoría registrada exitosamente');
+                        window.location.href = '/categorias/lista';                      
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        let errorMessage = jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : 'Error desconocido';
+                        mostrarMensaje('error', errorMessage);
+                        console.log(textStatus, errorThrown);
+                        }
+                });
+            });
+        })
+</script>
+   
+<%- include('../footer') %>   

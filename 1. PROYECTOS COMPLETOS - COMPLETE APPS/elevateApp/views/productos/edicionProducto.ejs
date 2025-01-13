@@ -1,0 +1,119 @@
+<%- include('../header') %>
+    <form action="/productos/modificar" method="post" enctype="multipart/form-data" id="registrarProducto"> 
+        <input type="hidden" value="<%= producto.codigo %>" name="codigo">
+        <div class="rounded row ">
+            <div class="text-center"><h2>Editar Producto</h2></div>
+                <div class="row-sm-2 mb-3"><a href="/productos/lista" class="btn btn-primary col-sm-1">Regresar</a></div> 
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <div><label for="Código de barras">Código de Barras</label></div>
+                            <input class="form-control"  type="text" id="codigo de Barras" name="codigo_barras" value="<%= producto.codigo_barras %>">  
+                        </div>
+                        <div class="col-sm-8">
+                            <div><label for="nombre">Nombre</label></div>
+                            <input class= "form-control" type="text" id="nombre" name="nombre" value="<%= producto.nombre %>">
+                        </div>                  
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <div class=""><label for="marca">Marca</label></div>
+                            <input class="form-control"   type="text" id="marca" name="marca" value="<%= producto.marca %>" >  
+                        </div>
+                        <div class="col-sm-8">
+                            <div class=""><label for="modelo">Modelo</label></div>
+                            <input class="form-control"   type="text" id="modelo" name="modelo" value="<%= producto.modelo %>">  
+                        </div>                        
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <div class=""><label for="Uso">Uso</label></div>
+                            <input class="form-control" type="text" id="uso" name="uso" value="<%= producto.uso %>">
+                        </div>
+                        <div class="col-sm-4">
+                            <div class=""><label for="categoria">Categoría</label></div>
+                            <select class="form-select" name="categoria" id="categoria" required value="<%= categorias %>">
+                                <% categorias.forEach(categoria => {%>
+                                    <option value="<%=categoria.codigo%>"<%if(categoria.codigo==producto.categoria){%>selected<%}%>><%=categoria.nombre%></option> 
+                                <% });  %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center row mb-2">
+                        <div class="col-sm-3">
+                            <div class=""><label for="existencias">Existencias</label></div>
+                            <input class="form-control" type="text" id="existencias" name="existencias" value="<%= producto.existencias %>">
+                        </div>
+                        <div class="col-sm-3">
+                            <div class=""><label for="minimo">Stock Mínimo</label></div>
+                            <input class="form-control" type="text" id="minimo" name="minimo" value="<%= producto.minimo %>"> 
+                        </div>
+                        <div class="col-sm-3">
+                            <div class=""><label for="pcompra">Precio de compra($)</label></div>
+                            <input class="form-control" type="text" id="pcompra" name="pcompra" value="<%= producto.precio_compra %>">
+                        </div>
+                        <div class="col-sm-3">
+                            <div class=""><label for="pventa">Precio de venta($)</label></div>
+                            <input class="form-control" type="text" id="pventa" name="pventa" value="<%= producto.precio_venta %>"> 
+                        </div>                        
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <div class="foto col-sm-4">
+                            <div class="text-center">
+                                <img alt="" id="add-image-preview" src="/img/productos/<%= producto.codigo %>.png" class="img-responsive mb-2" width="150px" height="150px">
+                                <label class="btn btn-primary mb-2 d-block mx-auto col-sm-3" for="imagen" id="fotol">Imágen</label>
+                            </div>
+                            <input type="file" name="imagen_producto" id="imagen" accept="image/*" class="d-none">
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end row">                        
+                        <input class="btn btn-primary col-sm-1"  type="submit" value="Guardar">
+                    </div>   
+            </div>
+        </div>
+    </form>
+
+<div id="contenedor-mensajes"></div>        
+<script src="/js/general.js"></script>   
+    <script>
+        $(document).ready(function() {
+        // Mostrar vista previa de la imagen al seleccionar un archivo en el formulario de agregar producto
+            $("#imagen").change(function() {
+                var file = $(this)[0].files[0];
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                $("#add-image-preview").attr("src", e.target.result);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            $('#registrarProducto').submit(function(event){
+                if (!procesarFormulario("registrarProducto")) return false;  
+                event.preventDefault(); // Prevenir el envío tradicional del formulario
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '/productos/modificar',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        // Aquí puedes manejar la respuesta del servidor
+                        localStorage.setItem('mensaje', 'Producto modificado exitosamente');
+                        window.location.href = '/productos/lista';
+                        
+                       
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        // Aquí puedes manejar los errores
+                        alert('Error al guardar el producto');
+                        console.log(textStatus, errorThrown);
+                    }
+                });
+            });
+
+
+        });
+    </script>
+<%- include('../footer') %>   

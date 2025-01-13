@@ -1,0 +1,444 @@
+<%- include('../header') %>
+<form action="productos/nuevo" method="post" id="ncompra">
+        <div class="rounded row contenedor">
+            <h2 class="text-center">Nuevo Pedido</h2>  
+                    <div>
+                        <div class="row-sm-2 mb-3"><a href="/compras/lista" class="btn btn-primary col-sm-1">Regresar</a></div>
+                        <div class="row mb-2">
+                            <div class="col-sm-2 ">
+                                <div class=""><label for="numerocompra">N° Pedido</label></div>    
+                                <div>
+                                    <input readonly type="text" class="form-control" id="numerocompra" name="codigo" value="<%= codigo %>">
+                                </div>
+                            </div>    
+                            <div class="col-sm-4 ">
+                                <div class=""><label for="codigo_proveedor">Proveedor</label></div>
+                                <input type="hidden" name="codigo_proveedor" id="codigo_proveedor" required />
+                                <div class="form-group">                                
+                                    <div class="input-group">
+                                        <input class="form-control"  type="search" id="proveedor" name="proveedor" >
+                                        <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProveedores"><i class="fa-solid fa-magnifying-glass"></i></a>
+                                        <a href="/proveedores/nuevo" target="_blank" id="añadir_proveedor" type="button" class="btn btn-primary"><i class="fa-solid fa-plus"></i></a>
+                                    </div> 
+                                </div>                   
+                            </div>
+                            <div class="col-sm-2 ">
+                                <div class=""><label for="fechacompra">Fecha</label></div>
+                                <div><input class="form-control w-75"  type="date" id="fechacompra" name="fechacompra" required></div>
+                            </div>
+                        </div>
+                        <hr>
+                   <!--  INICIO   -->  
+                    
+                        <div class="row mb-2">
+                            
+                            <div class="col-sm-4">
+                                <div class=""><label for="producto">Producto</label></div>
+                                <input type="hidden" name="codigo_producto" id="codigo_producto" />                                
+                                <div class="input-group">
+                                    <textarea class="form-control" name="producto" id="producto" rows="1" required></textarea>                                  
+                                    <button id="listadoProductos" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProductos" ><i class="fa-solid fa-table-list"></i></button>    
+                                    <a href="/productos/nuevo" target="_blank" id="añadir_producto" type="button" class="btn btn-primary"><i class="fa-solid fa-plus"></i></a>                               
+                                </div>                                    
+                            </div>
+                            <div class="col-sm-2">
+                                <div class=""><label for="precio">Precio REF</label></div>
+                                <input readonly class="form-control" type="number" id="precio" name="precio">
+                            </div>
+                            <div class="col-sm-2">
+                                <div class=""><label for="cantidad">Cantidad</label></div>
+                                <div class="input-group">
+                                    <input class="form-control" type="number" id="cantidad" name="cantidad" required>   
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" row mb-2 d-flex justify-content-between">   
+                            <div class="col-sm-3">
+                                <div><label for="total_producto">Total Producto REF</label></div>                        
+                                <input readonly class="form-control" type="number" id="total_producto" name="total_producto">
+                            </div> 
+                            <div class="col-sm-3">
+                                <div><label for="total_compra">Total Compra REF</label></div>
+                                <input class="form-control" type="number" id="total_compra" name="total_compra">
+                            </div>                                               
+                        </div>
+                     
+                    <!-- FINAL --> 
+                        <hr>
+                        <div class="row mb-2 d-flex justify-content-between">
+                            <div class="col-sm-2">
+                                <div class="btn btn-primary col-sm-12" id="agregar">Añadir Producto</div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="btn btn-success me-2 col-sm-12" id="cerrarCompra">Cerrar Compra</div>                               
+                            </div>
+                        </div>
+         </div>      
+</form>
+
+    <table class="col-sm-12 table table-hover table-bordered mb-2" id="tabla">
+        <thead>
+            <tr>
+                <th class="texto">Imágen</th>
+                <th class="texto">Código</th>
+                <th class="texto">Producto</th>
+                <th class="texto">Precio</th>
+                <th class="texto">Cantidad</th>
+                <th class="texto">Total</th>
+                <th class="texto">Eliminar</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>   
+
+    <!-- Modal Proveedores -->
+    <div class="modal fade modal-lg" id="modalProveedores" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">    
+                    <h5 class="modal-title">Listado de Proveedores</h5>    
+                    <div class="btn-close" data-bs-dismiss="modal"></div>    
+                </div>
+                <div class="modal-body" style="overflow-x: auto; white-space: nowrap;">
+                    <table class="col-sm-12 table table-hover table-bordered mb-2" id="tabla_proveedores">
+                        <thead>
+                          <tr>
+                            <td class="texto">Codigo</td>
+                            <td class="texto">RIF</td>
+                            <td class="texto">Razón social</td>
+                            <td class="texto">Dirección</td>
+                            <td class="texto">Teléfono</td>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% proveedores.forEach(proveedor => { %>
+                          <tr>
+                            <td><%= proveedor.codigo %></td>
+                            <td><%= proveedor.rif %></td>
+                            <td><%= proveedor.razon_social %></td>
+                            <td><%= proveedor.direccion %></td>
+                            <td><%= proveedor.telefono %></td>
+                          </tr>                                                  
+                          <% }) %>
+                        </tbody>
+                      </table>    
+                </div>
+                <div class="modal-footer">
+                    <div class="btn btn-danger" data-bs-dismiss="modal">Cancelar</div>
+                    <div class="btn btn-primary">Guardar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Modal Proveedores-->
+
+    <!-- Inicio Modal Productos -->
+    <div class="modal fade modal-lg" id="modalProductos" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">                                            
+                <div class="modal-header">
+                    <h5 class="modal-title">Este es el titulo</h5>
+                    <div class="btn-close" data-bs-dismiss="modal"></div>
+                </div>
+                <div class="modal-body">
+                    <table class=" col-sm-12 table table-hover table-bordered mb-2" id="tabla_productos">                    
+                        <thead>                                            
+                            <tr>
+                                <td class="texto">Imágen</td>
+                                <td class="texto">Código</td>                                             
+                                <td class="texto">Nombre</td>
+                                <td class="texto">Marca</td>
+                                <td class="texto">Modelo</td>
+                                <!-- <td class="texto">Uso</td> COLOCARLO COMO TOOLTIP-->
+                                <td class="texto">Precio de Compra</td>                                            
+                            </tr>                                            
+                        </thead>                                                        
+                        <tbody>
+                            <% productos.forEach(producto => { %>
+                            <tr id="<%= producto.codigo %>" class="">
+                                <td class="text-center imagen"><img src="/img/productos/<%= producto.codigo %>.png" width="50px" height="50px"></td>
+                                <td class="text-center codigo"><%= producto.codigo %></td>                                
+                                <td class="text-center producto"><%= producto.nombre %></td>
+                                <td class="text-center precio"><%= producto.marca %></td>
+                                <td class="text-center cantidad"><%= producto.modelo %></td>
+                                <td class="text-center total"><%= producto.precio_compra %></td>
+                            </tr>                                    
+                            <% }) %>
+                        </tbody>                                                     
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn btn-danger" data-bs-dismiss="modal">Cancelar</div>
+                    <div class="btn btn-primary">Guardar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="contenedor-mensajes"></div>
+    <!-- Fin Modal Productos-->
+        <script src="/js/general.js"></script>
+        <script>
+            $(document).ready(function(){
+
+                let sumatoria = 0;
+
+                $("#agregar").on('click', function (e) {   
+                    
+                    if (!procesarFormulario("ncompra")) return false;
+
+                    const producto = $("#producto").val();
+                    const precio = parseFloat($("#precio").val())
+                    const cantidad = parseFloat($("#cantidad").val())
+                    /* console.log(producto, precio, cantidad) */
+                    const total = precio * cantidad
+                    const codigo_producto = $('#codigo_producto').val();
+                    let i = 0;
+
+                    $(".fila").each(function() {
+                        if($(this).find("td:eq(1)").text() == codigo_producto){
+
+                            i++
+                        }
+                    });
+                    
+                    if(i > 0){
+                        let cantidadTD = parseFloat($(`#${codigo_producto} > .cantidad`).text()) + cantidad
+                        $(`#${codigo_producto} > .cantidad`).text(cantidadTD)
+                        $(`#${codigo_producto} > .total`).text(cantidadTD * precio)
+                    }else{                        
+                            const div = `<tr id = "${codigo_producto}" class = "fila">
+                            <td class="imagen"><img src="/img/productos/${codigo_producto}.png" width="50px" height="50px"></td> 
+                            <td class="codigo">${codigo_producto}</td>
+                            <td class="producto">${producto}</td>
+                            <td class="precio">${precio}</td>
+                            <td class="cantidad">${cantidad}</td>
+                            <td class="total">${total}</td>
+                            <td style="text-align: center;"><div class="btn btn-danger eliminar"><i class="fa-solid fa-trash"></i></div></td></tr>`
+                        $("#tabla > tbody").append(div)
+                    }
+                        $('#producto').val('')
+                        $('#precio').val('')
+                        $('#cantidad').val('')
+                        $('#total_producto').val('')                   
+
+                        // Calcular la sumatoria de la columna "total"
+                        let sumatoria = 0;
+                        $(".fila").each(function() {
+                            sumatoria += parseInt($(this).find("td:eq(5)").text());
+                        });
+                        // Mostrar el resultado en un input
+                        $("#total_compra").val(sumatoria);    
+                    
+
+                    
+                              
+                })
+
+                $("tbody").on('click', '.eliminar', function (e) {
+                    sumatoria = parseFloat($("#total_compra").val())
+                    
+                    const id = $(this).parents(".fila").attr("id")
+                    const valorColumna5 = parseFloat($(`#${id}`).find('td').eq(5).text());
+                    sumatoria -= valorColumna5;
+                    console.log(id)
+                    $(`#${id}`).remove()
+                    $("#total_compra").val(sumatoria);
+
+
+                    //$("#tabla > tbody").append(div)
+                })
+
+                $("#proveedor").autocomplete({
+
+                    source: function(request, response){
+                        $.ajax({
+                            url: "/compras/autoCompleteProveedoresA",
+                            type: "GET",
+                            data:{
+                                term: request.term// El termino representa la busqueda - Get. 
+                            },
+                            success: function(data) { 
+                                response(data.map(item => ({
+                                        label: `${item.razon_social}`,
+                                        value: item.razon_social, 
+                                        codigo: item.codigo
+                                    })));
+                            },
+                            error: function() {
+                                console.error('Error fetching autocomplete data');
+                            }
+                        });
+                    },
+                    minLength: 2, // Mínimo número de caracteres antes de lanzar la solicitud                    
+                    select: function (event, ui) {
+                        event.preventDefault();               
+                        $('#codigo_proveedor').val(ui.item.codigo);                
+                        $(this).val(ui.item.value)
+                        console.log(ui.item.codigo)
+                    }
+                });
+
+                $("#producto").autocomplete({
+                    source: function(request, response){
+                        $.ajax({
+                            url: "/compras/autoCompleteProductosA",
+                            type: "GET",
+                            data:{
+                                term: request.term// El termino representa la busqueda - Get. 
+                            },
+                            success: function(data) { 
+                                response(data.map(item => ({
+                                        label: `${item.nombre}`,
+                                        value: item.nombre, 
+                                        codigo: item.codigo,
+                                        precio_compra: item.precio_compra,
+                                    })));
+                            },
+                            error: function() {
+                                console.error('Error fetching autocomplete data');
+                            }
+                        });
+                    },
+                    minLength: 2, // Mínimo número de caracteres antes de lanzar la solicitud
+                    select: function (event, ui) {
+                        event.preventDefault();               
+                        $('#codigo_producto').val(ui.item.codigo);                
+                        $(this).val(ui.item.value)
+                        console.log(ui.item.codigo)
+                        $('#precio').val(ui.item.precio_compra)
+                    }
+                });
+
+                $("#cantidad").on('change',function(){
+                    let cantidad = $(this).val()
+                    let totalref = cantidad * $(precio).val()
+                    $('#total_producto').val(totalref)
+                })
+
+                $(document).keypress(function(event) {
+                    if (event.which === 13) {
+                        event.preventDefault();
+                        return false;
+                    }
+                });
+
+                $('#tabla_proveedores tbody').off('click', 'tr').on('click', 'tr', function() {
+                    /* var codigo = $(this).find('td:eq(0)').text(); // Obtener el valor de la primera celda del tr
+                    alert(codigo); */
+                    $('#codigo_proveedor').val($(this).find('td:eq(0)').text());
+                    $('#proveedor').val($(this).find('td:eq(2)').text());
+                   
+                    $('#modalProveedores').hide();
+                    $('.modal-backdrop').remove();
+                   
+
+                     /* $.ajax({
+                        url: '/compras/autoCompleteProveedoresB', // URL del endpoint de búsqueda
+                        method: 'GET', // Cambiar a 'POST' si es necesario
+                        data: { codigo }, // Enviar el código como parámetro de búsqueda
+                        success: function(data) {
+                            // Asignar el valor devuelto al input con id proveedor
+                            if (data.length > 0) {
+                                $('#proveedor').val(data[0].razon_social);
+                            } else {
+                                console.error('No se encontró el proveedor con el código proporcionado.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error en la solicitud AJAX:', error);
+                        }
+                    });  */
+                });
+
+                $('#tabla_productos tbody').off('click', 'tr').on('click', 'tr', function() {
+                    var codigo = $(this).find('td:eq(1)').text(); // Obtener el valor de la primera celda del tr
+                    
+
+                    $('#modalProductos').hide();
+                    $('.modal-backdrop').remove();
+
+                    $.ajax({
+                        url: '/compras/autoCompleteProductosB', // URL del endpoint de búsqueda
+                        method: 'GET', // Cambiar a 'POST' si es necesario
+                        data: { codigo }, // Enviar el código como parámetro de búsqueda
+                        success: function(data) {
+                            // Asignar el valor devuelto al input con id proveedor
+                            if (data.length > 0) {
+                                $('#producto').val(data[0].nombre);
+                                $('#codigo_producto').val(data[0].codigo);
+                                $('#precio').val(data[0].precio_compra)
+
+                            } else {
+                                console.error('No se encontró el producto con el código proporcionado.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error en la solicitud AJAX:', error);
+                        }
+                    });
+                });
+                
+                
+                $('#cerrarCompra').click(function() { 
+                    
+                    
+                    let nFilas = $("#tabla tr").length;
+                    if (nFilas  < 2){                        
+                        mostrarMensaje('error','El ingreso de productos es obligatorio')
+                        return false
+                    }
+                    
+
+                    const codigo_proveedor = $('#codigo_proveedor').val();
+                    const fechaCompra = $('#fechacompra').val();
+                    const totalCompra = $("#total_compra").val();
+
+                    var productos = [];
+                    $('#tabla tbody tr').each(function() {                       
+                        var codigo_producto = $(this).find('td').eq(1).text();                        
+                        var precio_compra = $(this).find('td').eq(3).text();
+                        var cantidad = $(this).find('td').eq(4).text();
+                        var total = $(this).find('td').eq(5).text();                      
+
+                        productos.push({
+                            codigo_producto: codigo_producto,
+                            precio_compra: parseFloat(precio_compra),
+                            cantidad: parseInt(cantidad),
+                            total: parseFloat(total)
+                        });
+                    });
+
+                    let compra = {
+                        codigo_proveedor : codigo_proveedor,
+                        totalCompra : totalCompra,
+                        fechaCompra: fechaCompra,
+                        productos : productos,
+                    }                    
+
+                    var compraJson = JSON.stringify(compra);
+    
+                    // Aquí puedes hacer algo con productosJson, como enviarlo a un servidor o almacenarlo
+                    console.log(compraJson);
+
+                    $.ajax({
+                        url: '/compras/guardar', // Cambia esto a la URL de tu endpoint en el servidor
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: compraJson,
+                        success: function(response) {
+                            // Manejar la respuesta del servidor
+                            localStorage.setItem('mensaje', 'Compra registrada exitosamente');
+                            window.location.href = '/compras/lista'
+                            
+                        },
+                        error: function(xhr, status, error) {
+                            // Manejar el error
+                            alert('Error al registrar la compra');
+                            console.log(error);
+                        }
+                    });             
+                });                    
+            })                
+     </script>
+
+<%- include('../footer') %>  
