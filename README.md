@@ -88,7 +88,7 @@ PostgreSQL,
 HTML/CSS,
 Git/GitHub.
 
-📌Este portafolio representa una muestra de mi trabajo en el desarrollo de aplicaciones web y sistemas completos para diversos propósitos. Estoy comprometido con la creación de soluciones funcionales y escalables que resuelvan problemas reales y optimicen procesos. ¡Gracias por visitar!.
+📌Este portafolio representa una muestra de mi trabajo en el desarrollo de aplicaciones web y sistemas completos para diversos propósitos. Estoy comprometido con la creación de soluciones funcionales y escalables que resuelvan problemas reales y optimicen procesos. ¡Gracias por visitar!
 
 //INGLÉS - ENGLISH
 
