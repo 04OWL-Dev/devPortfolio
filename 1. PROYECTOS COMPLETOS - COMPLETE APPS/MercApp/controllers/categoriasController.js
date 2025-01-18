@@ -1,7 +1,6 @@
 const pool = require('../config/database');
 
 const categoriasController = {
-
   obtenerCategorias: async (req, res) => {
 
     try {
