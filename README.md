@@ -27,7 +27,7 @@ Prisma ORM,
 Jquery,
 Bootstrap.
 
-3. Tienda de Viveres.
+3. MercApp.
 Este sistema está enfocado en la gestión de productos, inventarios y ventas para una tienda de víveres. Permite realizar ventas tanto por unidades como por peso y está configurado para ventas al por mayor, donde el precio del producto varía dependiendo de las cantidades adquiridas. Además, cuenta con la actualización automática del tipo de cambio, lo cual facilita la gestión de precios en tiempo real. Este sistema es una amplificación de Elevate App.
 
 Tecnologías:
